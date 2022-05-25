@@ -1,6 +1,7 @@
 package pro.sky.telegrambot.constant;
 
 public enum ButtonNameEnum {
+//    Главное меню
     SHELTER_INFO("\uD83D\uDDFA Информация о приюте"),
     HOW_TO_TAKE_ANIMAL("\uD83D\uDC36 Как взять животное из приюта"),
     UPLOAD_REPORT("\uD83D\uDCF8 Загрузить отчет"),

@@ -14,6 +14,8 @@ import pro.sky.telegrambot.constant.ButtonNameEnum;
 import javax.annotation.PostConstruct;
 import java.util.List;
 
+import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
+
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
 
@@ -31,22 +33,24 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
 //        Стартовое меню
-        Keyboard replyKeyboardMarkup = new ReplyKeyboardMarkup(
-                new String[]{ButtonNameEnum.SHELTER_INFO.getButtonName(), ButtonNameEnum.HOW_TO_TAKE_ANIMAL.getButtonName()},
-                new String[]{ButtonNameEnum.UPLOAD_REPORT.getButtonName(), ButtonNameEnum.CALL_VOLUNTEER.getButtonName()})
-                .resizeKeyboard(true)    // optional
-                .selective(true);        // optional
+        Keyboard mainMenu = new ReplyKeyboardMarkup(
+                new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
+                new String[]{UPLOAD_REPORT.getButtonName(), CALL_VOLUNTEER.getButtonName()})
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(true)
+                .selective(true);
 
         updates.forEach(update -> {
             logger.info("Processing update: {}", update);
             if (update.message() != null && update.message().text() != null) {
-                String msg = update.message().text();
                 chatId = update.message().chat().id();
                 String name = update.message().from().firstName();
+                String msg = update.message().text();
+                SendMessage msgForSend;
                 switch (msg) {
                     case "/start":
-                        SendMessage msgForSend = new SendMessage(chatId, "Добро пожаловать в наш бот. \uD83E\uDEE0");
-                        msgForSend.replyMarkup(replyKeyboardMarkup);
+                        msgForSend = new SendMessage(chatId, "Добро пожаловать в наш бот. \uD83E\uDEE0");
+                        msgForSend.replyMarkup(mainMenu);
                         telegramBot.execute(msgForSend);
                         break;
                     default:
