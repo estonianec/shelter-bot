@@ -20,6 +20,20 @@ public class Client {
     LocalDateTime adoptionDate; // Дата взятия животного
     LocalDateTime probationDate; // Дата окончания испытательного срока
 
+    public Client(Long chatId, String name, String mail, String phone, String contactName, LocalDateTime adoptionDate, LocalDateTime probationDate) {
+        this.chatId = chatId;
+        this.name = name;
+        this.mail = mail;
+        this.phone = phone;
+        this.contactName = contactName;
+        this.adoptionDate = adoptionDate;
+        this.probationDate = probationDate;
+    }
+
+    public Client() {
+
+    }
+
     public Long getChatId() {
         return chatId;
     }
