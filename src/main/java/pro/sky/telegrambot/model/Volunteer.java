@@ -1,12 +1,17 @@
 package pro.sky.telegrambot.model;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Objects;
 
 public class Volunteer {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    long chatId; // Идентификатор чата
 
-    long chatId;
-    String userName;
-    boolean isWorking;
+    String userName; // Имя волонтёра из ТГ
+    boolean isWorking; // Статус работы волонтёра
 
     public long getChatId() {
         return chatId;
