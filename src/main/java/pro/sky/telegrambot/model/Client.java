@@ -1,16 +1,24 @@
 package pro.sky.telegrambot.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Entity
 public class Client {
-    Long chatId;
-    String name;
-    String mail;
-    String phone;
-    String contactName;
-    LocalDateTime adoptionDate;
-    LocalDateTime probationDate;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    Long chatId; //Идентификатор чата
+
+    String name; // Имя в ТГ
+    String mail; // Контактная почта
+    String phone; // Контактный телефон
+    String contactName; // Контактное имя
+    LocalDateTime adoptionDate; // Дата взятия животного
+    LocalDateTime probationDate; // Дата окончания испытательного срока
 
     public Long getChatId() {
         return chatId;
