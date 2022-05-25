@@ -36,7 +36,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 String name = update.message().from().firstName();
                 switch (msg) {
                     case "/start":
-                        SendMessage msgForSend = new SendMessage(chatId, "test \uD83E\uDEE0");
+                        SendMessage msgForSend = new SendMessage(chatId, "Добро пожаловать в наш бот. \uD83E\uDEE0");
                         telegramBot.execute(msgForSend);
                         break;
                     default:
