@@ -3,13 +3,13 @@ package pro.sky.telegrambot.listener;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.*;
+import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pro.sky.telegrambot.constant.ButtonNameEnum;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -39,6 +39,32 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(true)
                 .selective(true);
+//        Меню о приюте
+        Keyboard shelterInfoMenu = new ReplyKeyboardMarkup(
+                new String[]{SHELTER_HISTORY.getButtonName(), SHELTER_CONTACT.getButtonName()},
+                new String[]{SHELTER_SECURITY.getButtonName(), GET_CONTACT.getButtonName()},
+                new String[]{CALL_VOLUNTEER.getButtonName(), TO_MAIN_MENU.getButtonName()})
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(true)
+                .selective(true);
+//        Меню советов и рекомендаций
+        Keyboard howToMenu = new ReplyKeyboardMarkup(
+                new String[]{RULES_OF_ACQUAINTANCE.getButtonName(), REQUIRED_DOCUMENTS.getButtonName()},
+                new String[]{REC_OF_TRANSPORTING.getButtonName(), REC_HOME_PUPPY.getButtonName()},
+                new String[]{REC_HOME_ADULT_DOG.getButtonName(), REC_HOME_DISABLED_DOG.getButtonName()},
+                new String[]{CYNOLOGIST_ADVICES.getButtonName(), LIST_OF_CYNOLOGISTS.getButtonName()},
+                new String[]{REASONS_OF_DENY.getButtonName(), GET_CONTACT.getButtonName()},
+                new String[]{CALL_VOLUNTEER.getButtonName(), TO_MAIN_MENU.getButtonName()})
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(true)
+                .selective(true);
+//        Меню усыновителя
+        Keyboard adoptionMenu = new ReplyKeyboardMarkup(
+                new String[]{REPORT_FORM.getButtonName(), HOW_TO_SEND_REPORT.getButtonName()},
+                new String[]{CALL_VOLUNTEER.getButtonName(), TO_MAIN_MENU.getButtonName()})
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(true)
+                .selective(true);
 
         updates.forEach(update -> {
             logger.info("Processing update: {}", update);
@@ -47,13 +73,22 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 String name = update.message().from().firstName();
                 String msg = update.message().text();
                 SendMessage msgForSend;
-                switch (msg) {
-                    case "/start":
-                        msgForSend = new SendMessage(chatId, "Добро пожаловать в наш бот. \uD83E\uDEE0");
-                        msgForSend.replyMarkup(mainMenu);
-                        telegramBot.execute(msgForSend);
-                        break;
-                    default:
+                if (msg.equals("/start") || msg.equals(TO_MAIN_MENU.getButtonName())) {
+                    msgForSend = new SendMessage(chatId, "Добро пожаловать в наш бот. \uD83E\uDEE0");
+                    msgForSend.replyMarkup(mainMenu);
+                    telegramBot.execute(msgForSend);
+                } else if (msg.equals(SHELTER_INFO.getButtonName())) {
+                    msgForSend = new SendMessage(chatId, "О чём конкретно вы хотели бы узнать? \uD83E\uDEE0");
+                    msgForSend.replyMarkup(shelterInfoMenu);
+                    telegramBot.execute(msgForSend);
+                } else if (msg.equals(HOW_TO_TAKE_ANIMAL.getButtonName())) {
+                    msgForSend = new SendMessage(chatId, "О чём конкретно вы хотели бы узнать? \uD83E\uDEE0");
+                    msgForSend.replyMarkup(howToMenu);
+                    telegramBot.execute(msgForSend);
+                } else if (msg.equals(UPLOAD_REPORT.getButtonName())) {
+                    msgForSend = new SendMessage(chatId, "О чём конкретно вы хотели бы узнать? \uD83E\uDEE0");
+                    msgForSend.replyMarkup(adoptionMenu);
+                    telegramBot.execute(msgForSend);
                 }
             }
         });
