@@ -20,9 +20,9 @@ public class Report {
     String behaviorChange;
 
     @ManyToOne
-    Customer customer;
+    Client client;
 
-    public Report(Long id, LocalDateTime dateTimeOfReport, Long fileSize, String mediaType, byte[] data, String diet, String health, String behaviorChange, Customer customer) {
+    public Report(Long id, LocalDateTime dateTimeOfReport, Long fileSize, String mediaType, byte[] data, String diet, String health, String behaviorChange, Client customer) {
         this.id = id;
         this.dateTimeOfReport = dateTimeOfReport;
         this.fileSize = fileSize;
@@ -31,7 +31,10 @@ public class Report {
         this.diet = diet;
         this.health = health;
         this.behaviorChange = behaviorChange;
-        this.customer = customer;
+    }
+
+    public Report() {
+
     }
 
     public Long getId() {
@@ -98,12 +101,12 @@ public class Report {
         this.behaviorChange = behaviorChange;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Client getCustomer() {
+        return client;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomer(Client customer) {
+        this.client = customer;
     }
 
     @Override
@@ -111,12 +114,12 @@ public class Report {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Report report = (Report) o;
-        return Objects.equals(id, report.id) && Objects.equals(dateTimeOfReport, report.dateTimeOfReport) && Objects.equals(fileSize, report.fileSize) && Objects.equals(mediaType, report.mediaType) && Arrays.equals(data, report.data) && Objects.equals(diet, report.diet) && Objects.equals(health, report.health) && Objects.equals(behaviorChange, report.behaviorChange) && Objects.equals(customer, report.customer);
+        return Objects.equals(id, report.id) && Objects.equals(dateTimeOfReport, report.dateTimeOfReport) && Objects.equals(fileSize, report.fileSize) && Objects.equals(mediaType, report.mediaType) && Arrays.equals(data, report.data) && Objects.equals(diet, report.diet) && Objects.equals(health, report.health) && Objects.equals(behaviorChange, report.behaviorChange) && Objects.equals(client, report.client);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, dateTimeOfReport, fileSize, mediaType, diet, health, behaviorChange, customer);
+        int result = Objects.hash(id, dateTimeOfReport, fileSize, mediaType, diet, health, behaviorChange, client);
         result = 31 * result + Arrays.hashCode(data);
         return result;
     }
