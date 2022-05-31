@@ -24,7 +24,11 @@ public enum ButtonNameEnum {
     REASONS_OF_DENY("Список причин отказа в заборе собаки из приюта"),
 //    Меню усыновителя
     REPORT_FORM("Форма ежедневного отчета"),
-    HOW_TO_SEND_REPORT("Как прислать отчёт");
+    HOW_TO_SEND_REPORT("Как прислать отчёт"),
+//    Меню волонтера
+    GET_QUESTION("Получить самый ранний вопрос клиента"),
+    GET_REPORT("Получить самый ранний отчёт усыновителя"),
+    GET_LIST_OF_USERS_WITHOUT_ANIMAL("Получить список клиентов без животного");
 
     private final String buttonName;
 

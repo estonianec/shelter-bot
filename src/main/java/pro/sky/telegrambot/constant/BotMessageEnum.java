@@ -5,9 +5,10 @@ public enum BotMessageEnum {
     START_MESSAGE("Добро пожаловать в наш бот. \uD83E\uDEE0"),
     REQUEST_INFO_MESSAGE("О чём конкретно вы хотели бы узнать? \uD83E\uDEE0"),
     NON_COMMAND_MESSAGE("Пожалуйста, воспользуйтесь клавиатурой\uD83D\uDC47"),
+    VOLUNTEER_MESSAGE("Привет, волонтер!"),
     //    Ответы на команды с клавиатуры
 
-    //    Меню о приюте
+    //    Меню о приюте,
     SHELTER_HISTORY_MESSAGE("История приюта"),
     SHELTER_CONTACT_MESSAGE("Расписание работы приюта, адрес и схема проезда"),
     SHELTER_SECURITY_MESSAGE("Общие рекомендации о технике безопасности на территории приюта"),
