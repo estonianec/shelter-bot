@@ -85,6 +85,58 @@ public class SendMessageServiceImpl implements SendMessageService {
         } else if (msg.equals(UPLOAD_REPORT.getButtonName())) {
             msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE.getMessage());
             msgForSend.replyMarkup(adoptionMenu);
+
+            //    Меню о приюте
+        } else if (msg.equals(SHELTER_HISTORY.getButtonName())) {
+            msgForSend = new SendMessage(chatId, SHELTER_HISTORY_MESSAGE.getMessage());
+            msgForSend.replyMarkup(shelterInfoMenu);
+        } else if (msg.equals(SHELTER_CONTACT.getButtonName())) {
+            msgForSend = new SendMessage(chatId, SHELTER_CONTACT_MESSAGE.getMessage());
+            msgForSend.replyMarkup(shelterInfoMenu);
+        } else if (msg.equals(SHELTER_SECURITY.getButtonName())) {
+            msgForSend = new SendMessage(chatId, SHELTER_SECURITY_MESSAGE.getMessage());
+            msgForSend.replyMarkup(shelterInfoMenu);
+        } else if (msg.equals(GET_CONTACT.getButtonName())) {
+            msgForSend = new SendMessage(chatId, GET_CONTACT_MESSAGE.getMessage());
+            msgForSend.replyMarkup(shelterInfoMenu);
+
+            //    Меню советов и рекомендаций
+        } else if (msg.equals(RULES_OF_ACQUAINTANCE.getButtonName())) {
+            msgForSend = new SendMessage(chatId, RULES_OF_ACQUAINTANCE_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+        } else if (msg.equals(REQUIRED_DOCUMENTS.getButtonName())) {
+            msgForSend = new SendMessage(chatId, REQUIRED_DOCUMENTS_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+        } else if (msg.equals(REC_OF_TRANSPORTING.getButtonName())) {
+            msgForSend = new SendMessage(chatId, REC_OF_TRANSPORTING_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+        } else if (msg.equals(REC_HOME_PUPPY.getButtonName())) {
+            msgForSend = new SendMessage(chatId, REC_HOME_PUPPY_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+        } else if (msg.equals(REC_HOME_ADULT_DOG.getButtonName())) {
+            msgForSend = new SendMessage(chatId, REC_HOME_ADULT_DOG_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+        } else if (msg.equals(REC_HOME_DISABLED_DOG.getButtonName())) {
+            msgForSend = new SendMessage(chatId, REC_HOME_DISABLED_DOG_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+        } else if (msg.equals(CYNOLOGIST_ADVICES.getButtonName())) {
+            msgForSend = new SendMessage(chatId, CYNOLOGIST_ADVICES_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+        } else if (msg.equals(LIST_OF_CYNOLOGISTS.getButtonName())) {
+            msgForSend = new SendMessage(chatId, LIST_OF_CYNOLOGISTS_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+        } else if (msg.equals(REASONS_OF_DENY.getButtonName())) {
+            msgForSend = new SendMessage(chatId, REASONS_OF_DENY_MESSAGE.getMessage());
+            msgForSend.replyMarkup(howToMenu);
+
+            //    Меню усыновителя
+        } else if (msg.equals(REPORT_FORM.getButtonName())) {
+            msgForSend = new SendMessage(chatId, REPORT_FORM_MESSAGE.getMessage());
+            msgForSend.replyMarkup(adoptionMenu);
+        } else if (msg.equals(HOW_TO_SEND_REPORT.getButtonName())) {
+            msgForSend = new SendMessage(chatId, HOW_TO_SEND_REPORT_MESSAGE.getMessage());
+            msgForSend.replyMarkup(adoptionMenu);
+
         } else if (msg.equals("/volunteer") && (volunteerService.isVolunteerExists(chatId))){
             msgForSend = new SendMessage(chatId, VOLUNTEER_MESSAGE.getMessage());
             msgForSend.replyMarkup(volunteerMenu);
