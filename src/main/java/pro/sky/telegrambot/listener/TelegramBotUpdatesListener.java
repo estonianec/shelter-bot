@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.constant.BotMessageEnum;
-import pro.sky.telegrambot.service.SendMessageService;
+import pro.sky.telegrambot.service.SendMessageServiceImpl;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -22,7 +22,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Autowired
     private TelegramBot telegramBot;
     @Autowired
-    private SendMessageService sendMessageService;
+    private SendMessageServiceImpl sendMessageService;
 
     @PostConstruct
     public void init() {
