@@ -6,7 +6,9 @@ import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.service.ClientService;
 import pro.sky.telegrambot.service.SendMessageService;
 import pro.sky.telegrambot.service.VolunteerService;
 
@@ -17,6 +19,13 @@ import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
 public class SendMessageServiceImpl implements SendMessageService {
 
     private final VolunteerService volunteerService;
+    private final ClientService clientService;
+
+    public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService) {
+        this.volunteerService = volunteerService;
+        this.clientService = clientService;
+    }
+
     //        Стартовое меню
     Keyboard mainMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
@@ -50,6 +59,7 @@ public class SendMessageServiceImpl implements SendMessageService {
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
+
     Keyboard volunteerMenu = new ReplyKeyboardMarkup(
             new String[]{GET_QUESTION.getButtonName(), GET_REPORT.getButtonName()},
             new String[]{GET_LIST_OF_USERS_WITHOUT_ANIMAL.getButtonName()})
@@ -58,10 +68,6 @@ public class SendMessageServiceImpl implements SendMessageService {
             .selective(true);
 
     private final Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);
-
-    public SendMessageServiceImpl(VolunteerService volunteerService) {
-        this.volunteerService = volunteerService;
-    }
 
 
     @Override
@@ -73,6 +79,10 @@ public class SendMessageServiceImpl implements SendMessageService {
         String msg = message.text().trim();
         if (message.text() == null) {
             throw new IllegalArgumentException();
+        } else if (!clientService.isClientExists(chatId)) {
+            clientService.createNewClient(message);
+            msgForSend = new SendMessage(chatId, "Добрый день, " + name + "! Рады приветствовать тебя в нашем приюте %shelter_name%!");
+            msgForSend.replyMarkup(mainMenu);
         } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU.getButtonName())) {
             msgForSend = new SendMessage(chatId, START_MESSAGE.getMessage());
             msgForSend.replyMarkup(mainMenu);
