@@ -1,4 +1,4 @@
-package pro.sky.telegrambot.service;
+package pro.sky.telegrambot.service.impl;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.Keyboard;
@@ -7,12 +7,13 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.service.SendMessageService;
 
 import static pro.sky.telegrambot.constant.BotMessageEnum.*;
 import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
 
 @Service
-public class SendMessageServiceImpl implements SendMessageService{
+public class SendMessageServiceImpl implements SendMessageService {
     //        Стартовое меню
     Keyboard mainMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
