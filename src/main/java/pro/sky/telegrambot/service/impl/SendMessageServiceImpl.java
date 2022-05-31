@@ -8,12 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.service.SendMessageService;
+import pro.sky.telegrambot.service.VolunteerService;
 
 import static pro.sky.telegrambot.constant.BotMessageEnum.*;
 import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
 
 @Service
 public class SendMessageServiceImpl implements SendMessageService {
+
+    private final VolunteerService volunteerService;
     //        Стартовое меню
     Keyboard mainMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
@@ -47,8 +50,18 @@ public class SendMessageServiceImpl implements SendMessageService {
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
+    Keyboard volunteerMenu = new ReplyKeyboardMarkup(
+            new String[]{GET_QUESTION.getButtonName(), GET_REPORT.getButtonName()},
+            new String[]{GET_LIST_OF_USERS_WITHOUT_ANIMAL.getButtonName()})
+            .resizeKeyboard(true)
+            .oneTimeKeyboard(true)
+            .selective(true);
 
     private final Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);
+
+    public SendMessageServiceImpl(VolunteerService volunteerService) {
+        this.volunteerService = volunteerService;
+    }
 
 
     @Override
@@ -72,6 +85,9 @@ public class SendMessageServiceImpl implements SendMessageService {
         } else if (msg.equals(UPLOAD_REPORT.getButtonName())) {
             msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE.getMessage());
             msgForSend.replyMarkup(adoptionMenu);
+        } else if (msg.equals("/volunteer") && (volunteerService.isVolunteerExists(chatId))){
+            msgForSend = new SendMessage(chatId, VOLUNTEER_MESSAGE.getMessage());
+            msgForSend.replyMarkup(volunteerMenu);
         } else {
             msgForSend = new SendMessage(chatId, NON_COMMAND_MESSAGE.getMessage());
             msgForSend.replyMarkup(mainMenu);
