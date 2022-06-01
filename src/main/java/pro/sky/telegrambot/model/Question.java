@@ -12,6 +12,7 @@ public class Question {
     Long chatId;
     String question;
     Boolean isAnswered;
+    Boolean isAsked;
     @ManyToOne
     Volunteer volunteer;
 
@@ -22,8 +23,17 @@ public class Question {
                 ", chatId=" + chatId +
                 ", question='" + question + '\'' +
                 ", isAnswered=" + isAnswered +
+                ", isAsked=" + isAsked +
                 ", volunteer=" + volunteer +
                 '}';
+    }
+
+    public Boolean getAsked() {
+        return isAsked;
+    }
+
+    public void setAsked(Boolean asked) {
+        isAsked = asked;
     }
 
     @Override
@@ -80,24 +90,5 @@ public class Question {
     }
 
     public Question() {
-    }
-
-    public Question(Long id, Long chatId, String question, Boolean isAnswered, Volunteer volunteer) {
-        this.id = id;
-        this.chatId = chatId;
-        this.question = question;
-        this.isAnswered = isAnswered;
-        this.volunteer = volunteer;
-    }
-
-    @ManyToOne(optional = false)
-    private Volunteer volunteers;
-
-    public Volunteer getVolunteers() {
-        return volunteers;
-    }
-
-    public void setVolunteers(Volunteer volunteers) {
-        this.volunteers = volunteers;
     }
 }
