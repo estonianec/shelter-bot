@@ -16,4 +16,6 @@ public interface ClientService {
     void setAdoptionDate(Long chatId);
 
     void setProbationDate(Long chatId);
+
+    void insertContact(Message message);
 }

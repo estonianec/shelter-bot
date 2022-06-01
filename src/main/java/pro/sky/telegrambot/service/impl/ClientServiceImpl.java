@@ -31,10 +31,6 @@ public class ClientServiceImpl implements ClientService {
         Client client = new Client();
         client.setChatId(message.chat().id());
         client.setName(message.from().firstName());
-        if (message.contact() != null) {
-            client.setLastName(message.contact().lastName());
-            client.setPhone(message.contact().phoneNumber());
-        }
         clientRepository.save(client);
     }
 
@@ -54,5 +50,13 @@ public class ClientServiceImpl implements ClientService {
         LocalDateTime newTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         newTime = newTime.plusDays(30);
         clientRepository.setProbationDate(newTime, chatId);
+    }
+
+    @Override
+    public void insertContact(Message message) {
+        Client client = clientRepository.getClientByChatId(message.chat().id());
+            client.setLastName(message.contact().lastName());
+            client.setPhone(message.contact().phoneNumber());
+        clientRepository.save(client);
     }
 }
