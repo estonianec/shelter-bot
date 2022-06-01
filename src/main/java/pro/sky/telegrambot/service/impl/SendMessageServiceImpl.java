@@ -97,7 +97,7 @@ public class SendMessageServiceImpl implements SendMessageService {
         }
         if (message.text() == null && message.contact() != null) {
             logger.info("Saving contact {}", message.contact());
-            clientService.createNewClient(message);
+            clientService.insertContact(message);
             msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE.getMessage());
             msgForSend.replyMarkup(shelterInfoMenu);
         }
