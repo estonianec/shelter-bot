@@ -1,31 +1,26 @@
 package pro.sky.telegrambot.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 public class Client {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     Long chatId; //Идентификатор чата
 
-    String name; // Имя в ТГ
-    String mail; // Контактная почта
+    String firstName; // Имя в ТГ
     String phone; // Контактный телефон
-    String contactName; // Контактное имя
+    String lastName; // Контактное имя
     LocalDateTime adoptionDate; // Дата взятия животного
     LocalDateTime probationDate; // Дата окончания испытательного срока
 
-    public Client(Long chatId, String name, String mail, String phone, String contactName, LocalDateTime adoptionDate, LocalDateTime probationDate) {
+    public Client(Long chatId, String firstName, String phone, String lastName, LocalDateTime adoptionDate, LocalDateTime probationDate) {
         this.chatId = chatId;
-        this.name = name;
-        this.mail = mail;
+        this.firstName = firstName;
         this.phone = phone;
-        this.contactName = contactName;
+        this.lastName = lastName;
         this.adoptionDate = adoptionDate;
         this.probationDate = probationDate;
     }
@@ -42,20 +37,12 @@ public class Client {
         this.chatId = chatId;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
+    public void setFirstName(String name) {
+        this.firstName = name;
     }
 
     public String getPhone() {
@@ -66,12 +53,12 @@ public class Client {
         this.phone = phone;
     }
 
-    public String getContactName() {
-        return contactName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setContactName(String contactName) {
-        this.contactName = contactName;
+    public void setLastName(String contactName) {
+        this.lastName = contactName;
     }
 
     public LocalDateTime getAdoptionDate() {
@@ -95,11 +82,11 @@ public class Client {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return Objects.equals(chatId, client.chatId) && Objects.equals(name, client.name) && Objects.equals(mail, client.mail) && Objects.equals(phone, client.phone) && Objects.equals(contactName, client.contactName) && Objects.equals(adoptionDate, client.adoptionDate) && Objects.equals(probationDate, client.probationDate);
+        return Objects.equals(chatId, client.chatId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(chatId, name, mail, phone, contactName, adoptionDate, probationDate);
+        return Objects.hash(chatId);
     }
 }

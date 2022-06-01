@@ -2,11 +2,13 @@ package pro.sky.telegrambot.service.impl;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.model.request.KeyboardButton;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.service.ClientService;
 import pro.sky.telegrambot.service.SendMessageService;
 import pro.sky.telegrambot.service.VolunteerService;
 
@@ -17,6 +19,7 @@ import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
 public class SendMessageServiceImpl implements SendMessageService {
 
     private final VolunteerService volunteerService;
+    private final ClientService clientService;
     //        Стартовое меню
     Keyboard mainMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
@@ -56,24 +59,47 @@ public class SendMessageServiceImpl implements SendMessageService {
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
+    Keyboard getContactMenu = new ReplyKeyboardMarkup(
+            new KeyboardButton(UPLOAD_CONTACT.getButtonName()).requestContact(true),
+            new KeyboardButton(TO_MAIN_MENU.getButtonName()))
+            .resizeKeyboard(true)
+            .oneTimeKeyboard(true)
+            .selective(true);
 
     private final Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);
 
-    public SendMessageServiceImpl(VolunteerService volunteerService) {
+    public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService) {
         this.volunteerService = volunteerService;
+        this.clientService = clientService;
     }
 
 
     @Override
     public SendMessage answerMessage(Message message) {
         logger.info("Answering message: {}", message);
-        SendMessage msgForSend;
+        SendMessage msgForSend = null;
         Long chatId = message.chat().id();
         String name = message.from().firstName();
-        String msg = message.text().trim();
-        if (message.text() == null) {
+        String msg;
+        if (message.text() != null) {
+            msg = message.text().trim();
+            msgForSend = getSendMessageFromText(chatId, msg);
+        }
+        if (message.text() == null && message.contact() != null) {
+            logger.info("Saving contact {}", message.contact());
+            clientService.saveClient(message.contact());
+            msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE.getMessage());
+            msgForSend.replyMarkup(shelterInfoMenu);
+        }
+        if (message.text() == null && message.contact() == null) {
             throw new IllegalArgumentException();
-        } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU.getButtonName())) {
+        }
+        return msgForSend;
+    }
+
+    private SendMessage getSendMessageFromText(Long chatId, String msg) {
+        SendMessage msgForSend;
+        if (msg.equals("/start") || msg.equals(TO_MAIN_MENU.getButtonName())) {
             msgForSend = new SendMessage(chatId, START_MESSAGE.getMessage());
             msgForSend.replyMarkup(mainMenu);
         } else if (msg.equals(SHELTER_INFO.getButtonName())) {
@@ -98,7 +124,8 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend.replyMarkup(shelterInfoMenu);
         } else if (msg.equals(GET_CONTACT.getButtonName())) {
             msgForSend = new SendMessage(chatId, GET_CONTACT_MESSAGE.getMessage());
-            msgForSend.replyMarkup(shelterInfoMenu);
+            msgForSend.replyMarkup(getContactMenu);
+
 
             //    Меню советов и рекомендаций
         } else if (msg.equals(RULES_OF_ACQUAINTANCE.getButtonName())) {

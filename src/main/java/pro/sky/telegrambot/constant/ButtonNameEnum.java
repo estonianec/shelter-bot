@@ -2,17 +2,18 @@ package pro.sky.telegrambot.constant;
 
 public enum ButtonNameEnum {
 //    Главное меню
-    SHELTER_INFO("\uD83D\uDDFA Информация о приюте"),
+SHELTER_INFO("\uD83D\uDDFA Информация о приюте"),
     HOW_TO_TAKE_ANIMAL("\uD83D\uDC36 Как взять животное из приюта"),
     UPLOAD_REPORT("\uD83D\uDCF8 Загрузить отчет"),
     CALL_VOLUNTEER("\uD83D\uDE4B\u200D Позвать волонтера"),
-//    Меню о приюте
+    //    Меню о приюте
     SHELTER_HISTORY("История приюта"),
     SHELTER_CONTACT("Расписание работы приюта, адрес и схема проезда"),
     SHELTER_SECURITY("Общие рекомендации о технике безопасности на территории приюта"),
     GET_CONTACT("Предоставить контактные данные приюту"),
+    UPLOAD_CONTACT("Отправить Ваши контактные данные"),
     TO_MAIN_MENU("\uD83D\uDD19 Вернуться в главное меню"),
-//    Меню советов и рекомендаций
+    //    Меню советов и рекомендаций
     RULES_OF_ACQUAINTANCE("Правила знакомства с собакой"),
     REQUIRED_DOCUMENTS("Список необходимых документов"),
     REC_OF_TRANSPORTING("Рекомендации по транспортировке животного"),
