@@ -2,6 +2,7 @@ package pro.sky.telegrambot.service.impl;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.model.request.KeyboardButton;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
@@ -70,6 +71,12 @@ public class SendMessageServiceImpl implements SendMessageService {
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
+    Keyboard getContactMenu = new ReplyKeyboardMarkup(
+            new KeyboardButton(UPLOAD_CONTACT.getButtonName()).requestContact(true),
+            new KeyboardButton(TO_MAIN_MENU.getButtonName()))
+            .resizeKeyboard(true)
+            .oneTimeKeyboard(true)
+            .selective(true);
 
     private final Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);
 
@@ -77,15 +84,30 @@ public class SendMessageServiceImpl implements SendMessageService {
     @Override
     public SendMessage answerMessage(Message message) {
         logger.info("Answering message: {}", message);
-        SendMessage msgForSend;
+        SendMessage msgForSend = null;
         Long chatId = message.chat().id();
-        String name = message.from().firstName();
-        String msg = message.text().trim();
-        if (message.text() == null) {
-            throw new IllegalArgumentException();
-        } else if (!clientService.isClientExists(chatId)) {
+        if (message.text() != null) {
+            msgForSend = getSendMessageFromText(message);
+        }
+        if (message.text() == null && message.contact() != null) {
+            logger.info("Saving contact {}", message.contact());
             clientService.createNewClient(message);
-            msgForSend = new SendMessage(chatId, "Добрый день, " + name + "! Рады приветствовать тебя в нашем приюте %shelter_name%!");
+            msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE.getMessage());
+            msgForSend.replyMarkup(shelterInfoMenu);
+        }
+        if (message.text() == null && message.contact() == null) {
+            throw new IllegalArgumentException();
+        }
+        return msgForSend;
+    }
+
+    private SendMessage getSendMessageFromText(Message message) {
+        SendMessage msgForSend;
+        String msg = message.text().trim();
+        Long chatId = message.chat().id();
+        if (!clientService.isClientExists(chatId)) {
+            clientService.createNewClient(message);
+            msgForSend = new SendMessage(chatId, "Добрый день, " + message.from().firstName() + "! Рады приветствовать тебя в нашем приюте %shelter_name%!");
             msgForSend.replyMarkup(mainMenu);
         } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU.getButtonName())) {
             msgForSend = new SendMessage(chatId, START_MESSAGE.getMessage());
@@ -112,7 +134,7 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend.replyMarkup(shelterInfoMenu);
         } else if (msg.equals(GET_CONTACT.getButtonName())) {
             msgForSend = new SendMessage(chatId, GET_CONTACT_MESSAGE.getMessage());
-            msgForSend.replyMarkup(shelterInfoMenu);
+            msgForSend.replyMarkup(getContactMenu);
 
             //    Меню советов и рекомендаций
         } else if (msg.equals(RULES_OF_ACQUAINTANCE.getButtonName())) {

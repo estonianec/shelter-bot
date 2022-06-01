@@ -14,7 +14,8 @@ public enum BotMessageEnum {
     SHELTER_HISTORY_MESSAGE("История приюта"),
     SHELTER_CONTACT_MESSAGE("Расписание работы приюта, адрес и схема проезда"),
     SHELTER_SECURITY_MESSAGE("Общие рекомендации о технике безопасности на территории приюта"),
-    GET_CONTACT_MESSAGE("Предоставить контактные данные приюту"),
+    GET_CONTACT_MESSAGE("Просим Вас предоставить Ваши контактные данные приюту, воспользуйтесь клавиатурой\uD83D\uDC47"),
+    SAVED_CONTACT_MESSAGE("Ваш контакт сохранен\uD83D\uDE4F"),
 
     //    Меню советов и рекомендаций
     RULES_OF_ACQUAINTANCE_MESSAGE("Правила знакомства с собакой"),

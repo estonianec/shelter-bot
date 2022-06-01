@@ -23,7 +23,11 @@ public class ClientServiceImpl implements ClientService {
     public void createNewClient(Message message) {
         Client client = new Client();
         client.setChatId(message.chat().id());
-        client.setContactName(message.from().firstName());
+        client.setName(message.from().firstName());
+        if (message.contact() != null) {
+            client.setLastName(message.contact().lastName());
+            client.setPhone(message.contact().phoneNumber());
+        }
         clientRepository.save(client);
     }
 }

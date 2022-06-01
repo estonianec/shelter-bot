@@ -1,8 +1,6 @@
 package pro.sky.telegrambot.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,9 +11,8 @@ public class Client {
     Long chatId; //Идентификатор чата
 
     String name; // Имя в ТГ
-    String mail; // Контактная почта
     String phone; // Контактный телефон
-    String contactName; // Контактное имя
+    String lastName; // Контактное имя
     LocalDateTime adoptionDate; // Дата взятия животного
     LocalDateTime probationDate; // Дата окончания испытательного срока
 
@@ -39,14 +36,6 @@ public class Client {
         this.name = name;
     }
 
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -55,12 +44,12 @@ public class Client {
         this.phone = phone;
     }
 
-    public String getContactName() {
-        return contactName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setContactName(String contactName) {
-        this.contactName = contactName;
+    public void setLastName(String contactName) {
+        this.lastName = contactName;
     }
 
     public LocalDateTime getAdoptionDate() {
@@ -84,11 +73,11 @@ public class Client {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return Objects.equals(chatId, client.chatId) && Objects.equals(name, client.name) && Objects.equals(mail, client.mail) && Objects.equals(phone, client.phone) && Objects.equals(contactName, client.contactName) && Objects.equals(adoptionDate, client.adoptionDate) && Objects.equals(probationDate, client.probationDate);
+        return Objects.equals(chatId, client.chatId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(chatId, name, mail, phone, contactName, adoptionDate, probationDate);
+        return Objects.hash(chatId);
     }
 }
