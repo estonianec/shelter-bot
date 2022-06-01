@@ -1,14 +1,21 @@
 package pro.sky.telegrambot.service.impl;
 
 import com.pengrad.telegrambot.model.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.repository.ClientRepository;
 import pro.sky.telegrambot.service.ClientService;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 @Service
 public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
+    private final Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
 
     public ClientServiceImpl(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
@@ -29,5 +36,23 @@ public class ClientServiceImpl implements ClientService {
             client.setPhone(message.contact().phoneNumber());
         }
         clientRepository.save(client);
+    }
+
+    @Override
+    public List<Client> getListOfUsersWithoutAnimal() {
+        return clientRepository.getClientsByAdoptionDateIsNull();
+    }
+
+    @Override
+    public void setAdoptionDate(Long chatId) {
+        LocalDateTime currentTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        clientRepository.setAdoptionDate(currentTime, chatId);
+    }
+
+    @Override
+    public void setProbationDate(Long chatId) {
+        LocalDateTime newTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        newTime = newTime.plusDays(30);
+        clientRepository.setProbationDate(newTime, chatId);
     }
 }

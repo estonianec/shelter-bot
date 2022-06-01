@@ -46,7 +46,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     private void handleUpdate(Update update) {
-        if (update.message() != null) {
+        if (update.callbackQuery() != null) {
+            telegramBot.execute(sendMessageService.answerMessage(update));
+        } else if (update.message() != null) {
             telegramBot.execute(sendMessageService.answerMessage(update.message()));
         }
     }

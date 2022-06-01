@@ -1,18 +1,23 @@
 package pro.sky.telegrambot.service.impl;
 
 import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.model.Question;
 import pro.sky.telegrambot.service.ClientService;
 import pro.sky.telegrambot.service.QuestionService;
 import pro.sky.telegrambot.service.SendMessageService;
 import pro.sky.telegrambot.service.VolunteerService;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import static pro.sky.telegrambot.constant.BotMessageEnum.*;
 import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
@@ -63,15 +68,16 @@ public class SendMessageServiceImpl implements SendMessageService {
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
-
+    //      Меню волонтера
     Keyboard volunteerMenu = new ReplyKeyboardMarkup(
             new String[]{GET_QUESTION.getButtonName(), GET_REPORT.getButtonName()},
             new String[]{OPEN_JOB.getButtonName(), CLOSE_JOB.getButtonName()},
-            new String[]{GET_LIST_OF_USERS_WITHOUT_ANIMAL.getButtonName()})
+            new String[]{GET_LIST_OF_USERS.getButtonName()})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
-    Keyboard getContactMenu = new ReplyKeyboardMarkup(
+    //      Меню контакта
+    Keyboard contactMenu = new ReplyKeyboardMarkup(
             new KeyboardButton(UPLOAD_CONTACT.getButtonName()).requestContact(true),
             new KeyboardButton(TO_MAIN_MENU.getButtonName()))
             .resizeKeyboard(true)
@@ -98,6 +104,29 @@ public class SendMessageServiceImpl implements SendMessageService {
         if (message.text() == null && message.contact() == null) {
             throw new IllegalArgumentException();
         }
+        return msgForSend;
+    }
+
+    @Override
+    public SendMessage answerMessage(Update update) {
+        SendMessage msgForSend;
+        Long chatId = update.callbackQuery().from().id();
+        String dataWithoutCommand = ""; //нужна для удаления других команд из chatId в дальнейшем
+        String client = null;
+        if (update.callbackQuery().data().startsWith("give_animal_to_user")) {
+            dataWithoutCommand = update.callbackQuery().data().replace("give_animal_to_user", "");
+            List<Client> listOfClients = clientService.getListOfUsersWithoutAnimal();
+            for (Client listOfClient : listOfClients) {
+                if (dataWithoutCommand.equals(listOfClient.getChatId().toString())) {
+                    clientService.setAdoptionDate(listOfClient.getChatId());
+                    clientService.setProbationDate(listOfClient.getChatId());
+                    client = listOfClient.getName();
+                }
+            }
+        }
+        msgForSend = new SendMessage(chatId, "Клиент " + client + " получил животное.");
+            msgForSend.replyMarkup(volunteerMenu);
+
         return msgForSend;
     }
 
@@ -134,7 +163,7 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend.replyMarkup(shelterInfoMenu);
         } else if (msg.equals(GET_CONTACT.getButtonName())) {
             msgForSend = new SendMessage(chatId, GET_CONTACT_MESSAGE.getMessage());
-            msgForSend.replyMarkup(getContactMenu);
+            msgForSend.replyMarkup(contactMenu);
 
             //    Меню советов и рекомендаций
         } else if (msg.equals(RULES_OF_ACQUAINTANCE.getButtonName())) {
@@ -193,6 +222,26 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend = new SendMessage(chatId, CLOSE_JOB_MESSAGE.getMessage());
             volunteerService.closeJob(message.chat().id());
             msgForSend.replyMarkup(volunteerMenu);
+
+        } else if (msg.equals(GET_LIST_OF_USERS.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
+            List<Client> listOfClients = clientService.getListOfUsersWithoutAnimal();
+            InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+                    new InlineKeyboardButton[]{});
+            if (!listOfClients.isEmpty()) {
+                StringBuilder clients = new StringBuilder("Name : chatId\n");
+                for (Client listOfClient : listOfClients) {
+                    clients.append(listOfClient.getName()).append(" : ").append(listOfClient.getChatId()).append("\n");
+                    inlineKeyboard.addRow(new InlineKeyboardButton(listOfClient.getName()).callbackData("give_animal_to_user" + listOfClient.getChatId().toString()));
+                }
+                clients.append("\nДля выбора клиента, которому будет предоставлено животное, нажмите на кнопку с его именем снизу");
+                msgForSend = new SendMessage(chatId, clients.toString());
+                msgForSend.replyMarkup(inlineKeyboard);
+            } else {
+                msgForSend = new SendMessage(chatId, NO_CLIENTS_WITHOUT_ANIMALS.getMessage());
+                msgForSend.replyMarkup(volunteerMenu);
+            }
+
+
         } else if ((volunteerService.isVolunteerExists(chatId)) && questionService.isItAnswer(message)){
             Question question = questionService.makeAnswer(message);
             msgForSend = new SendMessage(question.getChatId(), "Добрый день!\n\n" + message.text());
