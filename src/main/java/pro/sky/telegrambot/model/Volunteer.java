@@ -5,7 +5,7 @@ import java.util.Objects;
 
 @Entity
 public class Volunteer {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Id
     long chatId; // Идентификатор чата
 
