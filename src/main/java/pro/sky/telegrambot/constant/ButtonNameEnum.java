@@ -29,7 +29,9 @@ SHELTER_INFO("\uD83D\uDDFA Информация о приюте"),
 //    Меню волонтера
     GET_QUESTION("Получить самый ранний вопрос клиента"),
     GET_REPORT("Получить самый ранний отчёт усыновителя"),
-    GET_LIST_OF_USERS_WITHOUT_ANIMAL("Получить список клиентов без животного");
+    GET_LIST_OF_USERS_WITHOUT_ANIMAL("Получить список клиентов без животного"),
+    OPEN_JOB("Начать работу"),
+    CLOSE_JOB("Закончить работу");
 
     private final String buttonName;
 

@@ -16,4 +16,15 @@ public class VolunteerServiceImpl implements VolunteerService {
     public boolean isVolunteerExists(Long chatId) {
         return volunteerRepository.getVolunteerByChatId(chatId) != null;
     }
+
+    @Override
+    public void openJob(Long chatId) {
+        volunteerRepository.openJob(chatId);
+    }
+
+    @Override
+    public void closeJob(Long chatId) {
+        volunteerRepository.closeJob(chatId);
+    }
+
 }

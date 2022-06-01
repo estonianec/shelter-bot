@@ -1,8 +1,9 @@
 package pro.sky.telegrambot.service;
 
-import com.pengrad.telegrambot.model.Contact;
+import com.pengrad.telegrambot.model.Message;
 
 public interface ClientService {
+    boolean isClientExists(Long chatId);
 
-    void saveClient(Contact contact);
+    void createNewClient(Message message);
 }

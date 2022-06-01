@@ -8,7 +8,9 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.model.Question;
 import pro.sky.telegrambot.service.ClientService;
+import pro.sky.telegrambot.service.QuestionService;
 import pro.sky.telegrambot.service.SendMessageService;
 import pro.sky.telegrambot.service.VolunteerService;
 
@@ -20,6 +22,14 @@ public class SendMessageServiceImpl implements SendMessageService {
 
     private final VolunteerService volunteerService;
     private final ClientService clientService;
+    private final QuestionService questionService;
+
+    public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService, QuestionService questionService) {
+        this.volunteerService = volunteerService;
+        this.clientService = clientService;
+        this.questionService = questionService;
+    }
+
     //        Стартовое меню
     Keyboard mainMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
@@ -53,8 +63,10 @@ public class SendMessageServiceImpl implements SendMessageService {
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
+
     Keyboard volunteerMenu = new ReplyKeyboardMarkup(
             new String[]{GET_QUESTION.getButtonName(), GET_REPORT.getButtonName()},
+            new String[]{OPEN_JOB.getButtonName(), CLOSE_JOB.getButtonName()},
             new String[]{GET_LIST_OF_USERS_WITHOUT_ANIMAL.getButtonName()})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
@@ -68,38 +80,21 @@ public class SendMessageServiceImpl implements SendMessageService {
 
     private final Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);
 
-    public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService) {
-        this.volunteerService = volunteerService;
-        this.clientService = clientService;
-    }
-
 
     @Override
     public SendMessage answerMessage(Message message) {
         logger.info("Answering message: {}", message);
-        SendMessage msgForSend = null;
+        SendMessage msgForSend;
         Long chatId = message.chat().id();
         String name = message.from().firstName();
-        String msg;
-        if (message.text() != null) {
-            msg = message.text().trim();
-            msgForSend = getSendMessageFromText(chatId, msg);
-        }
-        if (message.text() == null && message.contact() != null) {
-            logger.info("Saving contact {}", message.contact());
-            clientService.saveClient(message.contact());
-            msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE.getMessage());
-            msgForSend.replyMarkup(shelterInfoMenu);
-        }
-        if (message.text() == null && message.contact() == null) {
+        String msg = message.text().trim();
+        if (message.text() == null) {
             throw new IllegalArgumentException();
-        }
-        return msgForSend;
-    }
-
-    private SendMessage getSendMessageFromText(Long chatId, String msg) {
-        SendMessage msgForSend;
-        if (msg.equals("/start") || msg.equals(TO_MAIN_MENU.getButtonName())) {
+        } else if (!clientService.isClientExists(chatId)) {
+            clientService.createNewClient(message);
+            msgForSend = new SendMessage(chatId, "Добрый день, " + name + "! Рады приветствовать тебя в нашем приюте %shelter_name%!");
+            msgForSend.replyMarkup(mainMenu);
+        } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU.getButtonName())) {
             msgForSend = new SendMessage(chatId, START_MESSAGE.getMessage());
             msgForSend.replyMarkup(mainMenu);
         } else if (msg.equals(SHELTER_INFO.getButtonName())) {
@@ -124,8 +119,7 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend.replyMarkup(shelterInfoMenu);
         } else if (msg.equals(GET_CONTACT.getButtonName())) {
             msgForSend = new SendMessage(chatId, GET_CONTACT_MESSAGE.getMessage());
-            msgForSend.replyMarkup(getContactMenu);
-
+            msgForSend.replyMarkup(shelterInfoMenu);
 
             //    Меню советов и рекомендаций
         } else if (msg.equals(RULES_OF_ACQUAINTANCE.getButtonName())) {
@@ -164,9 +158,39 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend = new SendMessage(chatId, HOW_TO_SEND_REPORT_MESSAGE.getMessage());
             msgForSend.replyMarkup(adoptionMenu);
 
+            //    Меню волонтера
+        } else if (msg.equals(GET_QUESTION.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
+            Question question = questionService.getOlderQuestion(message);
+            if (question != null) {
+                msgForSend = new SendMessage(chatId, "Поступил вопрос от клиента:\n" + question.getQuestion() + "\nВаше следующее сообщение станет ответом на вопрос. Будьте внимательны!");
+            } else {
+                msgForSend = new SendMessage(chatId, "Вопросов без ответа не осталось.");
+                msgForSend.replyMarkup(volunteerMenu);
+            }
         } else if (msg.equals("/volunteer") && (volunteerService.isVolunteerExists(chatId))){
             msgForSend = new SendMessage(chatId, VOLUNTEER_MESSAGE.getMessage());
             msgForSend.replyMarkup(volunteerMenu);
+        } else if (msg.equals(OPEN_JOB.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
+            msgForSend = new SendMessage(chatId, OPEN_JOB_MESSAGE.getMessage());
+            volunteerService.openJob(message.chat().id());
+            msgForSend.replyMarkup(volunteerMenu);
+        } else if (msg.equals(CLOSE_JOB.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
+            msgForSend = new SendMessage(chatId, CLOSE_JOB_MESSAGE.getMessage());
+            volunteerService.closeJob(message.chat().id());
+            msgForSend.replyMarkup(volunteerMenu);
+        } else if ((volunteerService.isVolunteerExists(chatId)) && questionService.isItAnswer(message)){
+            Question question = questionService.makeAnswer(message);
+            msgForSend = new SendMessage(question.getChatId(), "Добрый день!\n\n" + message.text());
+            msgForSend.replyMarkup(mainMenu);
+
+            //     Вопрос волонтеру
+        } else if (msg.equals(CALL_VOLUNTEER.getButtonName())){
+            msgForSend = new SendMessage(chatId, CLIENT_TO_VOLUNTEER_MESSAGE.getMessage());
+            questionService.createEmptyQuestion(message);
+        } else if (questionService.isQuestionExist(chatId)){
+            msgForSend = new SendMessage(chatId, CLIENT_TO_VOLUNTEER_MESSAGE_SAVE.getMessage());
+            questionService.createNewQuestion(message);
+            msgForSend.replyMarkup(mainMenu);
         } else {
             msgForSend = new SendMessage(chatId, NON_COMMAND_MESSAGE.getMessage());
             msgForSend.replyMarkup(mainMenu);

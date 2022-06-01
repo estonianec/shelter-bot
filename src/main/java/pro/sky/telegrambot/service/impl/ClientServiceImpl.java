@@ -1,6 +1,6 @@
 package pro.sky.telegrambot.service.impl;
 
-import com.pengrad.telegrambot.model.Contact;
+import com.pengrad.telegrambot.model.Message;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.repository.ClientRepository;
@@ -15,12 +15,19 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void saveClient(Contact contact) {
+    public boolean isClientExists(Long chatId) {
+        return clientRepository.getClientByChatId(chatId) != null;
+    }
+
+    @Override
+    public void createNewClient(Message message) {
         Client client = new Client();
-        client.setChatId(contact.userId());
-        client.setFirstName(contact.firstName());
-        client.setLastName(contact.lastName());
-        client.setPhone(contact.phoneNumber());
+        client.setChatId(message.chat().id());
+        client.setContactName(message.from().firstName());
+        if (message.contact() != null) {
+            client.setLastName(message.contact().lastName());
+            client.setPhone(message.contact().phoneNumber());
+        }
         clientRepository.save(client);
     }
 }

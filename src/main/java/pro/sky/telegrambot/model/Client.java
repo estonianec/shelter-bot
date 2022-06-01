@@ -10,20 +10,11 @@ public class Client {
     @Id
     Long chatId; //Идентификатор чата
 
-    String firstName; // Имя в ТГ
+    String name; // Имя в ТГ
     String phone; // Контактный телефон
     String lastName; // Контактное имя
     LocalDateTime adoptionDate; // Дата взятия животного
     LocalDateTime probationDate; // Дата окончания испытательного срока
-
-    public Client(Long chatId, String firstName, String phone, String lastName, LocalDateTime adoptionDate, LocalDateTime probationDate) {
-        this.chatId = chatId;
-        this.firstName = firstName;
-        this.phone = phone;
-        this.lastName = lastName;
-        this.adoptionDate = adoptionDate;
-        this.probationDate = probationDate;
-    }
 
     public Client() {
 
@@ -37,12 +28,12 @@ public class Client {
         this.chatId = chatId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String name) {
-        this.firstName = name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPhone() {
