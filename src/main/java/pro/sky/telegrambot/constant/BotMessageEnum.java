@@ -37,6 +37,7 @@ public enum BotMessageEnum {
     CLOSE_JOB_MESSAGE("С настоящего момента вам перестанут приходить уведомления о новых сообщениях."),
 
     //    Ошибки
+    NO_CLIENTS_WITHOUT_ANIMALS("Клиентов без животных больше не осталось. Вложитесь в рекламу."),
     EXCEPTION_WHAT_THE_FUCK("Что-то пошло не так, обратитесь к разработчику");
 
     private final String message;
