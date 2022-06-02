@@ -1,11 +1,13 @@
 package pro.sky.telegrambot.service.impl;
 
+import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.model.Question;
@@ -14,9 +16,6 @@ import pro.sky.telegrambot.service.QuestionService;
 import pro.sky.telegrambot.service.SendMessageService;
 import pro.sky.telegrambot.service.VolunteerService;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import static pro.sky.telegrambot.constant.BotMessageEnum.*;
@@ -28,6 +27,8 @@ public class SendMessageServiceImpl implements SendMessageService {
     private final VolunteerService volunteerService;
     private final ClientService clientService;
     private final QuestionService questionService;
+    @Autowired
+    private TelegramBot telegramBot;
 
     public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService, QuestionService questionService) {
         this.volunteerService = volunteerService;
@@ -111,21 +112,57 @@ public class SendMessageServiceImpl implements SendMessageService {
     public SendMessage answerMessage(Update update) {
         SendMessage msgForSend;
         Long chatId = update.callbackQuery().from().id();
-        String dataWithoutCommand = ""; //нужна для удаления других команд из chatId в дальнейшем
-        String client = null;
+        String dataWithoutCommand;
+        long clientChatId;
         if (update.callbackQuery().data().startsWith("give_animal_to_user")) {
             dataWithoutCommand = update.callbackQuery().data().replace("give_animal_to_user", "");
-            List<Client> listOfClients = clientService.getListOfUsersWithoutAnimal();
-            for (Client listOfClient : listOfClients) {
-                if (dataWithoutCommand.equals(listOfClient.getChatId().toString())) {
-                    clientService.setAdoptionDate(listOfClient.getChatId());
-                    clientService.setProbationDate(listOfClient.getChatId());
-                    client = listOfClient.getName();
-                }
-            }
-        }
-        msgForSend = new SendMessage(chatId, "Клиент " + client + " получил животное.");
+            clientChatId = Long.parseLong(dataWithoutCommand);
+            clientService.setAdoptionDate(clientChatId);
+                    clientService.setProbationDate(clientChatId);
+            msgForSend = new SendMessage(chatId, "Клиент " + clientChatId + " получил животное.");
             msgForSend.replyMarkup(volunteerMenu);
+        } else if (update.callbackQuery().data().startsWith("confirm_adoption")) {
+            dataWithoutCommand = update.callbackQuery().data().replace("confirm_adoption", "");
+            clientChatId = Long.parseLong(dataWithoutCommand);
+            msgForSend = new SendMessage(chatId, "Усыновитель " + clientChatId + " успешно прошёл испытательный срок.");
+            msgForSend.replyMarkup(volunteerMenu);
+            clientService.setAdoptionStatus(2, clientChatId);
+            telegramBot.execute(new SendMessage(clientChatId, "Поздравляем Вас с успешным окончанием испытательного срока!"));
+        } else if (update.callbackQuery().data().startsWith("cancel_adoption")) {
+            dataWithoutCommand = update.callbackQuery().data().replace("cancel_adoption", "");
+            clientChatId = Long.parseLong(dataWithoutCommand);
+            msgForSend = new SendMessage(chatId, "Усыновитель " + clientChatId + " не прошёл испытательный срок. Инструкция по дальнейшим действиям отправлена усыновителю");
+            msgForSend.replyMarkup(volunteerMenu);
+            clientService.setAdoptionStatus(3, clientChatId);
+            telegramBot.execute(new SendMessage(clientChatId, "К сожалению, Вы не прошли испытательный срок, и мы вынуждены отозвать животное. В ближайшее время с Вами свяжется наш волонтер"));
+        } else if (update.callbackQuery().data().startsWith("add_probation_days")) {
+            dataWithoutCommand = update.callbackQuery().data().replace("add_probation_days", "");
+            int countOfDays = Integer.parseInt(dataWithoutCommand.substring(0, dataWithoutCommand.indexOf('.')));
+            clientChatId = Long.parseLong(dataWithoutCommand.substring(dataWithoutCommand.indexOf('.') + 1));
+            clientService.addProbationDays(countOfDays, clientChatId);
+            msgForSend = new SendMessage(chatId, "Усыновителю " + clientChatId + " продлен испытательный срок на " + countOfDays);
+            msgForSend.replyMarkup(volunteerMenu);
+            telegramBot.execute(new SendMessage(clientChatId, "Ваш испытательный срок продлен на " + countOfDays + " дней"));
+        } else if (update.callbackQuery().data().startsWith("extend_probation")) {
+            dataWithoutCommand = update.callbackQuery().data().replace("extend_probation", "");
+            clientChatId = Long.parseLong(dataWithoutCommand);
+            msgForSend = new SendMessage(chatId, "Усыновителю " + clientChatId + " будет установлен новый испытательный срок. Выберите из меню, какое кол-во дней добавить к испытательному сроку усыновителя.");
+            InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+                    new InlineKeyboardButton[]{});
+            int day = 0;
+            for (int i = 0; i < 10; i++) {
+                inlineKeyboard.addRow(new InlineKeyboardButton(day + 1 + "").callbackData("add_probation_days" + (day + 1) + "." + clientChatId),
+                        new InlineKeyboardButton(day + 2 + "").callbackData("add_probation_days" + (day + 2) + "." + clientChatId),
+                        new InlineKeyboardButton(day + 3 + "").callbackData("add_probation_days" + (day + 3) + "." + clientChatId),
+                        new InlineKeyboardButton(day + 4 + "").callbackData("add_probation_days" + (day + 4) + "." + clientChatId),
+                        new InlineKeyboardButton(day + 5 + "").callbackData("add_probation_days" + (day + 5) + "." + clientChatId),
+                        new InlineKeyboardButton(day + 6 + "").callbackData("add_probation_days" + (day + 6) + "." + clientChatId),
+                        new InlineKeyboardButton(day + 7 + "").callbackData("add_probation_days" + (day + 7) + "." + clientChatId),
+                        new InlineKeyboardButton(day + 8 + "").callbackData("add_probation_days" + (day + 8) + "." + clientChatId));
+                day += 8;
+            }
+            msgForSend.replyMarkup(inlineKeyboard);
+        } else throw new IllegalArgumentException();
 
         return msgForSend;
     }
@@ -135,6 +172,7 @@ public class SendMessageServiceImpl implements SendMessageService {
         String msg = message.text().trim();
         Long chatId = message.chat().id();
         if (!clientService.isClientExists(chatId)) {
+            logger.info("У нас новый клиент");
             clientService.createNewClient(message);
             msgForSend = new SendMessage(chatId, "Добрый день, " + message.from().firstName() + "! Рады приветствовать тебя в нашем приюте %shelter_name%!");
             msgForSend.replyMarkup(mainMenu);

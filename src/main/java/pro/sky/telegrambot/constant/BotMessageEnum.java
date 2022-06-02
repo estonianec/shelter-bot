@@ -4,7 +4,7 @@ public enum BotMessageEnum {
 
     START_MESSAGE("Добро пожаловать в наш бот. \uD83E\uDEE0"),
     REQUEST_INFO_MESSAGE("О чём конкретно вы хотели бы узнать? \uD83E\uDEE0"),
-    NON_COMMAND_MESSAGE("Пожалуйста, воспользуйтесь клавиатурой\uD83D\uDC47"),
+    NON_COMMAND_MESSAGE("Пожалуйста, воспользуйтесь меню\uD83D\uDC47"),
     VOLUNTEER_MESSAGE("Привет, волонтер!"),
     CLIENT_TO_VOLUNTEER_MESSAGE("В следующем сообщении отправьте пожалуйста Ваш вопрос волонтёру. "),
     CLIENT_TO_VOLUNTEER_MESSAGE_SAVE("Ваше сообщение получено и первый освободившийся волонтер Вам на него ответит."),
