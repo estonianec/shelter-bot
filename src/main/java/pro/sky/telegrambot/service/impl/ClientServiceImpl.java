@@ -58,5 +58,6 @@ public class ClientServiceImpl implements ClientService {
             client.setLastName(message.contact().lastName());
             client.setPhone(message.contact().phoneNumber());
         clientRepository.save(client);
+        logger.info("Contact {} was saved", client);
     }
 }

@@ -9,14 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.model.Question;
-import pro.sky.telegrambot.service.ClientService;
-import pro.sky.telegrambot.service.QuestionService;
-import pro.sky.telegrambot.service.SendMessageService;
-import pro.sky.telegrambot.service.VolunteerService;
+import pro.sky.telegrambot.service.*;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import static pro.sky.telegrambot.constant.BotMessageEnum.*;
@@ -28,11 +22,13 @@ public class SendMessageServiceImpl implements SendMessageService {
     private final VolunteerService volunteerService;
     private final ClientService clientService;
     private final QuestionService questionService;
+    private final ReportService reportService;
 
-    public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService, QuestionService questionService) {
+    public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService, QuestionService questionService, ReportService reportService) {
         this.volunteerService = volunteerService;
         this.clientService = clientService;
         this.questionService = questionService;
+        this.reportService = reportService;
     }
 
     //        Стартовое меню
@@ -101,7 +97,17 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE.getMessage());
             msgForSend.replyMarkup(shelterInfoMenu);
         }
-        if (message.text() == null && message.contact() == null) {
+        if (message.text() == null && message.photo()[0] != null && message.caption() != null) {
+            reportService.saveReport(message);
+            msgForSend = new SendMessage(chatId, REPORT_SAVED_MESSAGE.getMessage());
+            msgForSend.replyMarkup(adoptionMenu);
+        }
+        if (message.text() == null && message.photo()[0] != null && message.caption() == null) {
+            msgForSend = new SendMessage(chatId, REPORT_WITHOUT_DESCRIPTION_MESSAGE.getMessage() +
+                    "\n" + REPORT_FORM_MESSAGE.getMessage());
+            msgForSend.replyMarkup(adoptionMenu);
+        }
+        if (message.text() == null && message.contact() == null && message.photo() == null) {
             throw new IllegalArgumentException();
         }
         return msgForSend;

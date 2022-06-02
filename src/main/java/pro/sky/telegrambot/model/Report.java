@@ -2,39 +2,23 @@ package pro.sky.telegrambot.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
 public class Report {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
     Long id;
 
     LocalDateTime dateTimeOfReport;
-    Long fileSize;
-    String mediaType;
-    byte[] data;
-    String diet;
-    String health;
-    String behaviorChange;
+    Integer fileSize;
+    String fileId;
+    String description;
 
     @ManyToOne
     Client client;
 
-    public Report(Long id, LocalDateTime dateTimeOfReport, Long fileSize, String mediaType, byte[] data, String diet, String health, String behaviorChange, Client customer) {
-        this.id = id;
-        this.dateTimeOfReport = dateTimeOfReport;
-        this.fileSize = fileSize;
-        this.mediaType = mediaType;
-        this.data = data;
-        this.diet = diet;
-        this.health = health;
-        this.behaviorChange = behaviorChange;
-    }
-
     public Report() {
-
     }
 
     public Long getId() {
@@ -53,60 +37,36 @@ public class Report {
         this.dateTimeOfReport = dateTimeOfReport;
     }
 
-    public Long getFileSize() {
+    public Integer getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(Long fileSize) {
+    public void setFileSize(Integer fileSize) {
         this.fileSize = fileSize;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    public String getFileId() {
+        return fileId;
     }
 
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
+    public void setFileId(String mediaType) {
+        this.fileId = mediaType;
     }
 
-    public byte[] getData() {
-        return data;
+    public String getDescription() {
+        return description;
     }
 
-    public void setData(byte[] data) {
-        this.data = data;
+    public void setDescription(String diet) {
+        this.description = diet;
     }
 
-    public String getDiet() {
-        return diet;
-    }
-
-    public void setDiet(String diet) {
-        this.diet = diet;
-    }
-
-    public String getHealth() {
-        return health;
-    }
-
-    public void setHealth(String health) {
-        this.health = health;
-    }
-
-    public String getBehaviorChange() {
-        return behaviorChange;
-    }
-
-    public void setBehaviorChange(String behaviorChange) {
-        this.behaviorChange = behaviorChange;
-    }
-
-    public Client getCustomer() {
+    public Client getClient() {
         return client;
     }
 
-    public void setCustomer(Client customer) {
-        this.client = customer;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     @Override
@@ -114,13 +74,11 @@ public class Report {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Report report = (Report) o;
-        return Objects.equals(id, report.id) && Objects.equals(dateTimeOfReport, report.dateTimeOfReport) && Objects.equals(fileSize, report.fileSize) && Objects.equals(mediaType, report.mediaType) && Arrays.equals(data, report.data) && Objects.equals(diet, report.diet) && Objects.equals(health, report.health) && Objects.equals(behaviorChange, report.behaviorChange) && Objects.equals(client, report.client);
+        return id.equals(report.id);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, dateTimeOfReport, fileSize, mediaType, diet, health, behaviorChange, client);
-        result = 31 * result + Arrays.hashCode(data);
-        return result;
+        return Objects.hash(id);
     }
 }
