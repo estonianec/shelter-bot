@@ -18,4 +18,12 @@ public interface ClientService {
     void setProbationDate(Long chatId);
 
     void insertContact(Message message);
+
+    List<Client> getListOfClientsWithAnimal();
+
+    List<Client> getListOfClientsWithAnimalAndProbationIsEnd();
+
+    void setAdoptionStatus(int i, Long clientChatId);
+
+    void addProbationDays(int countOfDays, Long clientChatId);
 }

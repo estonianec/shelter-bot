@@ -24,4 +24,6 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     @Query(value = "select * from volunteer where is_working = true", nativeQuery = true)
     List<Volunteer> getListVolunteers();
+
+    List<Volunteer> getAllBy();
 }

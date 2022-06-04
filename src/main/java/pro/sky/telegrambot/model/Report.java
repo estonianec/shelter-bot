@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Entity
 public class Report {
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     Long id;
 
@@ -14,11 +14,54 @@ public class Report {
     Integer fileSize;
     String fileId;
     String description;
+    boolean isReviewed;
 
     @ManyToOne
     Client client;
+    @ManyToOne
+    Volunteer volunteer;
 
     public Report() {
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isReviewed() {
+        return isReviewed;
+    }
+
+    public void setReviewed(boolean reviewed) {
+        isReviewed = reviewed;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Volunteer getVolunteer() {
+        return volunteer;
+    }
+
+    public void setVolunteer(Volunteer volunteer) {
+        this.volunteer = volunteer;
     }
 
     public Long getId() {
@@ -45,28 +88,8 @@ public class Report {
         this.fileSize = fileSize;
     }
 
-    public String getFileId() {
-        return fileId;
-    }
-
-    public void setFileId(String mediaType) {
-        this.fileId = mediaType;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String diet) {
-        this.description = diet;
-    }
-
-    public Client getClient() {
+    public Client getCustomer() {
         return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
     }
 
     @Override

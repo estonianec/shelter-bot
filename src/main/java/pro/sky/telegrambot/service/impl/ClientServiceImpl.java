@@ -16,6 +16,7 @@ import java.util.List;
 public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
+    LocalDateTime currentTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
     public ClientServiceImpl(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
@@ -31,6 +32,7 @@ public class ClientServiceImpl implements ClientService {
         Client client = new Client();
         client.setChatId(message.chat().id());
         client.setName(message.from().firstName());
+        client.setAdoptionStatus(0);
         clientRepository.save(client);
     }
 
@@ -41,7 +43,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void setAdoptionDate(Long chatId) {
-        LocalDateTime currentTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         clientRepository.setAdoptionDate(currentTime, chatId);
     }
 
@@ -59,5 +60,25 @@ public class ClientServiceImpl implements ClientService {
             client.setPhone(message.contact().phoneNumber());
         clientRepository.save(client);
         logger.info("Contact {} was saved", client);
+    }
+
+    @Override
+    public List<Client> getListOfClientsWithAnimal() {
+        return clientRepository.getListOfClientsWithAnimal(currentTime);
+    }
+
+    @Override
+    public List<Client> getListOfClientsWithAnimalAndProbationIsEnd() {
+        return clientRepository.getListOfClientsWithAnimalAndProbationIsEnd(currentTime);
+    }
+
+    @Override
+    public void setAdoptionStatus(int newStatus, Long clientChatId) {
+        clientRepository.setAdoptionStatus(newStatus, clientChatId);
+    }
+
+    @Override
+    public void addProbationDays(int countOfDays, Long clientChatId) {
+        clientRepository.addProbationDays(currentTime.plusDays(countOfDays), clientChatId);
     }
 }
