@@ -1,8 +1,11 @@
 package pro.sky.telegrambot.service.impl;
 
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,9 @@ import pro.sky.telegrambot.service.ReportService;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import static pro.sky.telegrambot.constant.ButtonNameEnum.GET_QUESTION;
+import static pro.sky.telegrambot.constant.ButtonNameEnum.GET_REPORT;
 
 
 @Service
@@ -39,8 +45,13 @@ public class ReportServiceImpl implements ReportService  {
     }
 
     private final Logger logger = LoggerFactory.getLogger(ReportServiceImpl.class);
+    Keyboard volunteerMenu = new ReplyKeyboardMarkup(
+            GET_REPORT.getButtonName())
+            .resizeKeyboard(true)
+            .oneTimeKeyboard(true)
+            .selective(true);
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0/1 * * *")
     public void sendNotices() {
         sendNoticesToClientsAboutReports();
         sendNoticesToVolunteersAboutReports();
@@ -94,6 +105,30 @@ public class ReportServiceImpl implements ReportService  {
                     sendMessage.replyMarkup(inlineKeyboard);
                         telegramBot.execute(sendMessage);
                 }
+            }
+        }
+    }
+
+    @Override
+    public Report getOlderReport(Message message) {
+        Report report = reportRepository.getOlderReport();
+        if (report != null) {
+            reportRepository.markReportAsReviewed(report.getId(), message.chat().id());
+            return report;
+        }
+        return null;
+    }
+
+    @Scheduled(cron = "0 0 0/2 * * *")
+    public void sendNoticesToVolunteersAboutNewReports() {
+        List<Volunteer> listOfVolunteers = volunteerService.getAllVolunteers();
+        long chatId;
+        if (reportRepository.getOlderReport() != null) {
+            for (Volunteer listOfVolunteer : listOfVolunteers) {
+                    chatId = listOfVolunteer.getChatId();
+                    SendMessage request = new SendMessage(chatId, "Появились новые отчёты от усыновителей. Что бы ознакомиться нажмите кнопку ниже.");
+                    request.replyMarkup(volunteerMenu);
+                    telegramBot.execute(request);
             }
         }
     }

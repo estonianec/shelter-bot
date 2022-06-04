@@ -5,16 +5,15 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SendPhoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.model.Question;
-import pro.sky.telegrambot.service.ClientService;
-import pro.sky.telegrambot.service.QuestionService;
-import pro.sky.telegrambot.service.SendMessageService;
-import pro.sky.telegrambot.service.VolunteerService;
+import pro.sky.telegrambot.model.Report;
+import pro.sky.telegrambot.service.*;
 
 import java.util.List;
 
@@ -27,13 +26,15 @@ public class SendMessageServiceImpl implements SendMessageService {
     private final VolunteerService volunteerService;
     private final ClientService clientService;
     private final QuestionService questionService;
+    private final ReportService reportService;
     @Autowired
     private TelegramBot telegramBot;
 
-    public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService, QuestionService questionService) {
+    public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService, QuestionService questionService, ReportService reportService) {
         this.volunteerService = volunteerService;
         this.clientService = clientService;
         this.questionService = questionService;
+        this.reportService = reportService;
     }
 
     //        Стартовое меню
@@ -118,9 +119,15 @@ public class SendMessageServiceImpl implements SendMessageService {
             dataWithoutCommand = update.callbackQuery().data().replace("give_animal_to_user", "");
             clientChatId = Long.parseLong(dataWithoutCommand);
             clientService.setAdoptionDate(clientChatId);
-                    clientService.setProbationDate(clientChatId);
+            clientService.setProbationDate(clientChatId);
             msgForSend = new SendMessage(chatId, "Клиент " + clientChatId + " получил животное.");
             msgForSend.replyMarkup(volunteerMenu);
+        } else if (update.callbackQuery().data().startsWith("send_note")) {
+                dataWithoutCommand = update.callbackQuery().data().replace("send_note", "");
+                clientChatId = Long.parseLong(dataWithoutCommand);
+                msgForSend = new SendMessage(chatId, "Усыновителю " + clientChatId + " отправлено сообщение о некачественном отчёте.");
+                msgForSend.replyMarkup(volunteerMenu);
+                telegramBot.execute(new SendMessage(clientChatId, "Дорогой усыновитель, мы заметили, что ты заполняешь отчет не так подробно, как необходимо. Пожалуйста, подойди ответственнее к этому занятию. В противном случае волонтеры приюта будут обязаны самолично проверять условия содержания собаки"));
         } else if (update.callbackQuery().data().startsWith("confirm_adoption")) {
             dataWithoutCommand = update.callbackQuery().data().replace("confirm_adoption", "");
             clientChatId = Long.parseLong(dataWithoutCommand);
@@ -247,6 +254,20 @@ public class SendMessageServiceImpl implements SendMessageService {
                 msgForSend = new SendMessage(chatId, "Поступил вопрос от клиента:\n" + question.getQuestion() + "\nВаше следующее сообщение станет ответом на вопрос. Будьте внимательны!");
             } else {
                 msgForSend = new SendMessage(chatId, "Вопросов без ответа не осталось.");
+                msgForSend.replyMarkup(volunteerMenu);
+            }
+        } else if (msg.equals(GET_REPORT.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
+            Report report = reportService.getOlderReport(message);
+            if (report != null) {
+                telegramBot.execute(new SendPhoto(chatId, report.getFileId()));
+                telegramBot.execute(new SendMessage(chatId, report.getDescription()));
+                InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+                        new InlineKeyboardButton[]{});
+                inlineKeyboard.addRow(new InlineKeyboardButton("Отправить замечание").callbackData("send_note" + report.getClient().getChatId()));
+                msgForSend = new SendMessage(chatId, "Отчёт от пользователя " + report.getClient().getName() + " уже помечен, как просмотренный. Если Вас не устраивает качество отчёта, нажмите кнопку \"Отправить замечание\" ниже.");
+                msgForSend.replyMarkup(inlineKeyboard);
+            } else {
+                msgForSend = new SendMessage(chatId, "Непросмотренных отчетов не осталось.");
                 msgForSend.replyMarkup(volunteerMenu);
             }
         } else if (msg.equals("/volunteer") && (volunteerService.isVolunteerExists(chatId))){
