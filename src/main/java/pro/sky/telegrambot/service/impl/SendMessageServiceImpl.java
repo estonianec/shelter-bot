@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.exceptions.IllegalMessageException;
 import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.model.Question;
 import pro.sky.telegrambot.service.*;
@@ -97,18 +98,18 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE.getMessage());
             msgForSend.replyMarkup(shelterInfoMenu);
         }
-        if (message.text() == null && message.photo()[0] != null && message.caption() != null) {
+        if (message.text() == null && message.photo() != null && message.caption() != null) {
             reportService.saveReport(message);
             msgForSend = new SendMessage(chatId, REPORT_SAVED_MESSAGE.getMessage());
             msgForSend.replyMarkup(adoptionMenu);
         }
-        if (message.text() == null && message.photo()[0] != null && message.caption() == null) {
+        if (message.text() == null && message.photo() != null && message.caption() == null) {
             msgForSend = new SendMessage(chatId, REPORT_WITHOUT_DESCRIPTION_MESSAGE.getMessage() +
                     "\n" + REPORT_FORM_MESSAGE.getMessage());
             msgForSend.replyMarkup(adoptionMenu);
         }
-        if (message.text() == null && message.contact() == null && message.photo() == null) {
-            throw new IllegalArgumentException();
+        if (message.text() == null && message.contact() == null && message.photo().length == 0) {
+            throw new IllegalMessageException();
         }
         return msgForSend;
     }
