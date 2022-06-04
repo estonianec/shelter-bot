@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.exceptions.IllegalMessageException;
 import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.model.Question;
 import pro.sky.telegrambot.model.Report;
@@ -103,8 +104,18 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE.getMessage());
             msgForSend.replyMarkup(shelterInfoMenu);
         }
-        if (message.text() == null && message.contact() == null) {
-            throw new IllegalArgumentException();
+        if (message.text() == null && message.photo() != null && message.caption() != null) {
+            reportService.saveReport(message);
+            msgForSend = new SendMessage(chatId, REPORT_SAVED_MESSAGE.getMessage());
+            msgForSend.replyMarkup(adoptionMenu);
+        }
+        if (message.text() == null && message.photo() != null && message.caption() == null) {
+            msgForSend = new SendMessage(chatId, REPORT_WITHOUT_DESCRIPTION_MESSAGE.getMessage() +
+                    "\n" + REPORT_FORM_MESSAGE.getMessage());
+            msgForSend.replyMarkup(adoptionMenu);
+        }
+        if (message.text() == null && message.contact() == null && message.photo().length == 0) {
+            throw new IllegalMessageException();
         }
         return msgForSend;
     }
@@ -179,7 +190,6 @@ public class SendMessageServiceImpl implements SendMessageService {
         String msg = message.text().trim();
         Long chatId = message.chat().id();
         if (!clientService.isClientExists(chatId)) {
-            logger.info("У нас новый клиент");
             clientService.createNewClient(message);
             msgForSend = new SendMessage(chatId, "Добрый день, " + message.from().firstName() + "! Рады приветствовать тебя в нашем приюте %shelter_name%!");
             msgForSend.replyMarkup(mainMenu);

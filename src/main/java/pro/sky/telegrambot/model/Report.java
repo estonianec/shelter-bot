@@ -2,7 +2,6 @@ package pro.sky.telegrambot.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
@@ -23,7 +22,6 @@ public class Report {
     Volunteer volunteer;
 
     public Report() {
-
     }
 
     public String getFileId() {
@@ -92,10 +90,6 @@ public class Report {
 
     public Client getCustomer() {
         return client;
-    }
-
-    public void setCustomer(Client customer) {
-        this.client = customer;
     }
 
     @Override

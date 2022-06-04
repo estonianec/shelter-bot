@@ -7,4 +7,6 @@ public interface ReportService {
 
 
     Report getOlderReport(Message message);
+
+    void saveReport(Message message);
 }

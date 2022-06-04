@@ -16,11 +16,9 @@ import pro.sky.telegrambot.repository.QuestionRepository;
 import pro.sky.telegrambot.repository.VolunteerRepository;
 import pro.sky.telegrambot.service.QuestionService;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
+import static pro.sky.telegrambot.constant.ButtonNameEnum.GET_QUESTION;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
