@@ -22,17 +22,6 @@ public class Report {
     @ManyToOne
     Client client;
 
-    public Report(Long id, LocalDateTime dateTimeOfReport, Long fileSize, String mediaType, byte[] data, String diet, String health, String behaviorChange, Client customer) {
-        this.id = id;
-        this.dateTimeOfReport = dateTimeOfReport;
-        this.fileSize = fileSize;
-        this.mediaType = mediaType;
-        this.data = data;
-        this.diet = diet;
-        this.health = health;
-        this.behaviorChange = behaviorChange;
-    }
-
     public Report() {
 
     }
