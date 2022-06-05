@@ -105,9 +105,14 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend.replyMarkup(shelterInfoMenu);
         }
         if (message.text() == null && message.photo() != null && message.caption() != null) {
-            reportService.saveReport(message);
-            msgForSend = new SendMessage(chatId, REPORT_SAVED_MESSAGE.getMessage());
-            msgForSend.replyMarkup(adoptionMenu);
+            if (clientService.getClientByChatId(chatId).getAdoptionStatus() == 1) {
+                reportService.saveReport(message);
+                msgForSend = new SendMessage(chatId, REPORT_SAVED_MESSAGE.getMessage());
+                msgForSend.replyMarkup(adoptionMenu);
+            } else {
+                msgForSend = new SendMessage(chatId, REPORT_NO_NEEDED_MESSAGE.getMessage());
+                msgForSend.replyMarkup(howToMenu);
+            }
         }
         if (message.text() == null && message.photo() != null && message.caption() == null) {
             msgForSend = new SendMessage(chatId, REPORT_WITHOUT_DESCRIPTION_MESSAGE.getMessage() +
