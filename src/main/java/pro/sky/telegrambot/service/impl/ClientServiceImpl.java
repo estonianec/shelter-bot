@@ -81,4 +81,9 @@ public class ClientServiceImpl implements ClientService {
     public void addProbationDays(int countOfDays, Long clientChatId) {
         clientRepository.addProbationDays(currentTime.plusDays(countOfDays), clientChatId);
     }
+
+    @Override
+    public Client getClientByChatId(Long clientChatId) {
+        return clientRepository.getClientByChatId(clientChatId);
+    }
 }
