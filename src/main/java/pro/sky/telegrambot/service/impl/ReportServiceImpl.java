@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.Client;
 import pro.sky.telegrambot.model.Report;
 import pro.sky.telegrambot.model.Volunteer;
-import pro.sky.telegrambot.repository.ClientRepository;
 import pro.sky.telegrambot.repository.ReportRepository;
 import pro.sky.telegrambot.service.ReportService;
 
@@ -23,7 +22,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static pro.sky.telegrambot.constant.ButtonNameEnum.GET_QUESTION;
 import static pro.sky.telegrambot.constant.ButtonNameEnum.GET_REPORT;
 
 
@@ -36,15 +34,13 @@ public class ReportServiceImpl implements ReportService  {
     private final ReportRepository reportRepository;
     private final ClientServiceImpl clientService;
     private final VolunteerServiceImpl volunteerService;
-    private final ClientRepository clientRepository;
     @Autowired
     private TelegramBot telegramBot;
 
-    public ReportServiceImpl(ReportRepository reportRepository, ClientServiceImpl clientService, VolunteerServiceImpl volunteerService, ClientRepository clientRepository) {
+    public ReportServiceImpl(ReportRepository reportRepository, ClientServiceImpl clientService, VolunteerServiceImpl volunteerService) {
         this.reportRepository = reportRepository;
         this.clientService = clientService;
         this.volunteerService = volunteerService;
-        this.clientRepository = clientRepository;
     }
 
     private final Logger logger = LoggerFactory.getLogger(ReportServiceImpl.class);
@@ -148,7 +144,7 @@ public class ReportServiceImpl implements ReportService  {
         Integer fileSize = message.photo()[2].fileSize();
         report.setFileSize(fileSize);
         logger.info("Saving report {}", report);
-        Client client = clientRepository.getClientByChatId(message.chat().id());
+        Client client = clientService.getClientByChatId(message.chat().id());
         report.setClient(client);
         logger.info("Try to find client {}", client);
         Report oldReport = reportRepository.findReportByClientAndDateTimeOfReport(client.getChatId(), nowDate);

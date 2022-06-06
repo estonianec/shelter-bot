@@ -3,7 +3,6 @@ package pro.sky.telegrambot.service;
 import com.pengrad.telegrambot.model.Message;
 import pro.sky.telegrambot.model.Client;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ClientService {
@@ -26,4 +25,6 @@ public interface ClientService {
     void setAdoptionStatus(int i, Long clientChatId);
 
     void addProbationDays(int countOfDays, Long clientChatId);
+
+    Client getClientByChatId(Long clientChatId);
 }
