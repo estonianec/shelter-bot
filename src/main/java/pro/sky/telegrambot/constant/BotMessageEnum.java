@@ -35,6 +35,7 @@ public enum BotMessageEnum {
             "- Изменение в поведении: отказ от старых привычек, приобретение новых. "),
     HOW_TO_SEND_REPORT_MESSAGE("Как прислать отчёт"),
     REPORT_SAVED_MESSAGE("Ваш отчёт сохранен, спасибо\uD83D\uDE4F"),
+    REPORT_NO_NEEDED_MESSAGE("Вам не нужно присылать отчёт, Вы не забирали животное из приюта"),
     REPORT_WITHOUT_DESCRIPTION_MESSAGE("Вы не сделали описание к фото"),
 
     //    Меню волонтера
