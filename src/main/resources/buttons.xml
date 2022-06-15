@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <comment>xml example</comment>
+    <entry key="SHELTER_INFO">\uD83D\uDDFA Информация о приюте</entry>
+    <entry key="HOW_TO_TAKE_ANIMAL">\uD83D\uDC36 Как взять животное из приюта</entry>
+    <entry key="UPLOAD_REPORT">\uD83D\uDCF8 Загрузить отчет</entry>
+    <entry key="CALL_VOLUNTEER">\uD83D\uDE4B\u200D Позвать волонтера</entry>
+    <entry key="SHELTER_HISTORY">История приюта</entry>
+    <entry key="SHELTER_CONTACT">Расписание работы приюта, адрес и схема проезда</entry>
+    <entry key="SHELTER_SECURITY">Общие рекомендации о технике безопасности на территории приюта</entry>
+    <entry key="GET_CONTACT">Предоставить контактные данные приюту</entry>
+    <entry key="UPLOAD_CONTACT">Отправить Ваши контактные данные</entry>
+    <entry key="TO_MAIN_MENU">\uD83D\uDD19 Вернуться в главное меню</entry>
+    <entry key="RULES_OF_ACQUAINTANCE">Правила знакомства с собакой</entry>
+    <entry key="REQUIRED_DOCUMENTS">Список необходимых документов</entry>
+    <entry key="REC_OF_TRANSPORTING">Рекомендации по транспортировке животного</entry>
+    <entry key="REC_HOME_PUPPY">Рекомендации по обустройству дома для щенка</entry>
+    <entry key="REC_HOME_ADULT_DOG">Рекомендаций по обустройству дома для взрослой собаки</entry>
+    <entry key="REC_HOME_DISABLED_DOG">Рекомендаций по обустройству дома для собаки-инвалида (зрение, передвижения)
+    </entry>
+    <entry key="CYNOLOGIST_ADVICES">Советы кинолога по первичному общению с собакой</entry>
+    <entry key="LIST_OF_CYNOLOGISTS">Список проверенных кинологов</entry>
+    <entry key="REASONS_OF_DENY">Список причин отказа в заборе собаки из приюта</entry>
+    <entry key="REPORT_FORM">Форма ежедневного отчета</entry>
+    <entry key="HOW_TO_SEND_REPORT">Как прислать отчёт</entry>
+    <entry key="HOW_TO_SEND_REPORT">Как прислать отчёт</entry>
+    <entry key="GET_QUESTION">Получить самый ранний вопрос клиента</entry>
+    <entry key="GET_REPORT">Получить самый ранний отчёт усыновителя</entry>
+    <entry key="GET_LIST_OF_USERS">Получить список клиентов без животного</entry>
+    <entry key="OPEN_JOB">Начать работу</entry>
+    <entry key="CLOSE_JOB">Закончить работу</entry>
+</properties>

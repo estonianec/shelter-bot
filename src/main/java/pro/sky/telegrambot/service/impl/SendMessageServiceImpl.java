@@ -17,6 +17,7 @@ import pro.sky.telegrambot.model.Report;
 import pro.sky.telegrambot.service.*;
 
 import java.util.List;
+import java.util.Properties;
 
 import static pro.sky.telegrambot.constant.BotMessageEnum.*;
 import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
@@ -39,6 +40,12 @@ public class SendMessageServiceImpl implements SendMessageService {
     }
 
     //        Стартовое меню
+    String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+    String buttonConfigPath = rootPath + "buttons.xml";
+    Properties buttonsProps = new Properties();
+    buttonsProps.lo(new
+
+    FileInputStream(buttonConfigPath));
     Keyboard mainMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
             new String[]{UPLOAD_REPORT.getButtonName(), CALL_VOLUNTEER.getButtonName()})
