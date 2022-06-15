@@ -9,6 +9,9 @@ import com.pengrad.telegrambot.request.SendPhoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.exceptions.IllegalMessageException;
 import pro.sky.telegrambot.model.Client;
@@ -23,6 +26,9 @@ import static pro.sky.telegrambot.constant.BotMessageEnum.*;
 import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
 
 @Service
+//@PropertySource("classpath:buttons.properties")
+//@PropertySource("classpath:messages.properties")
+
 public class SendMessageServiceImpl implements SendMessageService {
 
     private final VolunteerService volunteerService;
@@ -31,6 +37,8 @@ public class SendMessageServiceImpl implements SendMessageService {
     private final ReportService reportService;
     @Autowired
     private TelegramBot telegramBot;
+    @Autowired
+    private Environment environment;
 
     public SendMessageServiceImpl(VolunteerService volunteerService, ClientService clientService, QuestionService questionService, ReportService reportService) {
         this.volunteerService = volunteerService;
@@ -40,15 +48,9 @@ public class SendMessageServiceImpl implements SendMessageService {
     }
 
     //        Стартовое меню
-    String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-    String buttonConfigPath = rootPath + "buttons.xml";
-    Properties buttonsProps = new Properties();
-    buttonsProps.lo(new
-
-    FileInputStream(buttonConfigPath));
     Keyboard mainMenu = new ReplyKeyboardMarkup(
-            new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
-            new String[]{UPLOAD_REPORT.getButtonName(), CALL_VOLUNTEER.getButtonName()})
+            new String[]{environment.getProperty("SHELTER_INFO"), environment.getProperty("HOW_TO_TAKE_ANIMAL")},
+            new String[]{environment.getProperty("UPLOAD_REPORT"), environment.getProperty("CALL_VOLUNTEER")})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
@@ -73,8 +75,8 @@ public class SendMessageServiceImpl implements SendMessageService {
             .selective(true);
     //        Меню усыновителя
     Keyboard adoptionMenu = new ReplyKeyboardMarkup(
-            new String[]{REPORT_FORM.getButtonName(), HOW_TO_SEND_REPORT.getButtonName()},
-            new String[]{CALL_VOLUNTEER.getButtonName(), TO_MAIN_MENU.getButtonName()})
+            new String[]{environment.getProperty("REPORT_FORM"), environment.getProperty("HOW_TO_SEND_REPORT")},
+            new String[]{environment.getProperty("CALL_VOLUNTEER"), environment.getProperty("TO_MAIN_MENU")})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
