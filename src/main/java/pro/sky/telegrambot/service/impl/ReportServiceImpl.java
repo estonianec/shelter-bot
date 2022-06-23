@@ -22,8 +22,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static pro.sky.telegrambot.constant.ButtonNameEnum.GET_REPORT;
-
+import static pro.sky.telegrambot.constant.Constants.GET_REPORT;
 
 @Service
 public class ReportServiceImpl implements ReportService  {
@@ -45,7 +44,7 @@ public class ReportServiceImpl implements ReportService  {
 
     private final Logger logger = LoggerFactory.getLogger(ReportServiceImpl.class);
     Keyboard volunteerMenu = new ReplyKeyboardMarkup(
-            GET_REPORT.getButtonName())
+            GET_REPORT)
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);

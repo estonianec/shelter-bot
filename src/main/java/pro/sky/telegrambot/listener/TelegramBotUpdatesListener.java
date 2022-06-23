@@ -8,12 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pro.sky.telegrambot.constant.BotMessageEnum;
 import pro.sky.telegrambot.exceptions.IllegalMessageException;
 import pro.sky.telegrambot.service.impl.SendMessageServiceImpl;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+
+import static pro.sky.telegrambot.constant.Constants.EXCEPTION_WHAT_THE_FUCK;
 
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
@@ -40,7 +41,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 handleUpdate(update);
             } catch (IllegalMessageException e) {
                 telegramBot.execute(new SendMessage(update.message().chat().id(),
-                        BotMessageEnum.EXCEPTION_WHAT_THE_FUCK.getMessage()));
+                        EXCEPTION_WHAT_THE_FUCK));
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;

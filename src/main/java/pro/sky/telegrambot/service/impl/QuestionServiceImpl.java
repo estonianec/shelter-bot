@@ -18,7 +18,8 @@ import pro.sky.telegrambot.service.QuestionService;
 
 import java.util.List;
 
-import static pro.sky.telegrambot.constant.ButtonNameEnum.GET_QUESTION;
+import static pro.sky.telegrambot.constant.Constants.GET_QUESTION;
+
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -34,7 +35,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     Keyboard volunteerMenu = new ReplyKeyboardMarkup(
-            GET_QUESTION.getButtonName())
+            GET_QUESTION)
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
