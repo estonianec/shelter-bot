@@ -18,10 +18,10 @@ import pro.sky.telegrambot.service.*;
 
 import java.util.List;
 
-import static pro.sky.telegrambot.constant.BotMessageEnum.*;
-import static pro.sky.telegrambot.constant.ButtonNameEnum.*;
+import static pro.sky.telegrambot.constant.Constants.*;
 
 @Service
+
 public class SendMessageServiceImpl implements SendMessageService {
 
     private final VolunteerService volunteerService;
@@ -40,49 +40,49 @@ public class SendMessageServiceImpl implements SendMessageService {
 
     //        Стартовое меню
     Keyboard mainMenu = new ReplyKeyboardMarkup(
-            new String[]{SHELTER_INFO.getButtonName(), HOW_TO_TAKE_ANIMAL.getButtonName()},
-            new String[]{UPLOAD_REPORT.getButtonName(), CALL_VOLUNTEER.getButtonName()})
+            new String[]{SHELTER_INFO, HOW_TO_TAKE_ANIMAL},
+            new String[]{UPLOAD_REPORT, CALL_VOLUNTEER})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
     //        Меню о приюте
     Keyboard shelterInfoMenu = new ReplyKeyboardMarkup(
-            new String[]{SHELTER_HISTORY.getButtonName(), SHELTER_CONTACT.getButtonName()},
-            new String[]{SHELTER_SECURITY.getButtonName(), GET_CONTACT.getButtonName()},
-            new String[]{CALL_VOLUNTEER.getButtonName(), TO_MAIN_MENU.getButtonName()})
+            new String[]{SHELTER_HISTORY, SHELTER_CONTACT},
+            new String[]{SHELTER_SECURITY, GET_CONTACT},
+            new String[]{CALL_VOLUNTEER, TO_MAIN_MENU})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
     //        Меню советов и рекомендаций
     Keyboard howToMenu = new ReplyKeyboardMarkup(
-            new String[]{RULES_OF_ACQUAINTANCE.getButtonName(), REQUIRED_DOCUMENTS.getButtonName()},
-            new String[]{REC_OF_TRANSPORTING.getButtonName(), REC_HOME_PUPPY.getButtonName()},
-            new String[]{REC_HOME_ADULT_DOG.getButtonName(), REC_HOME_DISABLED_DOG.getButtonName()},
-            new String[]{CYNOLOGIST_ADVICES.getButtonName(), LIST_OF_CYNOLOGISTS.getButtonName()},
-            new String[]{REASONS_OF_DENY.getButtonName(), GET_CONTACT.getButtonName()},
-            new String[]{CALL_VOLUNTEER.getButtonName(), TO_MAIN_MENU.getButtonName()})
+            new String[]{RULES_OF_ACQUAINTANCE, REQUIRED_DOCUMENTS},
+            new String[]{REC_OF_TRANSPORTING, REC_HOME_PUPPY},
+            new String[]{REC_HOME_ADULT_DOG, REC_HOME_DISABLED_DOG},
+            new String[]{CYNOLOGIST_ADVICES, LIST_OF_CYNOLOGISTS},
+            new String[]{REASONS_OF_DENY, GET_CONTACT},
+            new String[]{CALL_VOLUNTEER, TO_MAIN_MENU})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
     //        Меню усыновителя
     Keyboard adoptionMenu = new ReplyKeyboardMarkup(
-            new String[]{REPORT_FORM.getButtonName(), HOW_TO_SEND_REPORT.getButtonName()},
-            new String[]{CALL_VOLUNTEER.getButtonName(), TO_MAIN_MENU.getButtonName()})
+            new String[]{REPORT_FORM, HOW_TO_SEND_REPORT},
+            new String[]{CALL_VOLUNTEER, TO_MAIN_MENU})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
     //      Меню волонтера
     Keyboard volunteerMenu = new ReplyKeyboardMarkup(
-            new String[]{GET_QUESTION.getButtonName(), GET_REPORT.getButtonName()},
-            new String[]{OPEN_JOB.getButtonName(), CLOSE_JOB.getButtonName()},
-            new String[]{GET_LIST_OF_USERS.getButtonName()})
+            new String[]{GET_QUESTION, GET_REPORT},
+            new String[]{OPEN_JOB, CLOSE_JOB},
+            new String[]{GET_LIST_OF_USERS})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
     //      Меню контакта
     Keyboard contactMenu = new ReplyKeyboardMarkup(
-            new KeyboardButton(UPLOAD_CONTACT.getButtonName()).requestContact(true),
-            new KeyboardButton(TO_MAIN_MENU.getButtonName()))
+            new KeyboardButton(UPLOAD_CONTACT).requestContact(true),
+            new KeyboardButton(TO_MAIN_MENU))
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
@@ -101,22 +101,22 @@ public class SendMessageServiceImpl implements SendMessageService {
         if (message.text() == null && message.contact() != null) {
             logger.info("Saving contact {}", message.contact());
             clientService.insertContact(message);
-            msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE.getMessage());
+            msgForSend = new SendMessage(chatId, SAVED_CONTACT_MESSAGE);
             msgForSend.replyMarkup(shelterInfoMenu);
         }
         if (message.text() == null && message.photo() != null && message.caption() != null) {
             if (clientService.getClientByChatId(chatId).getAdoptionStatus() == 1) {
                 reportService.saveReport(message);
-                msgForSend = new SendMessage(chatId, REPORT_SAVED_MESSAGE.getMessage());
+                msgForSend = new SendMessage(chatId, REPORT_SAVED_MESSAGE);
                 msgForSend.replyMarkup(adoptionMenu);
             } else {
-                msgForSend = new SendMessage(chatId, REPORT_NO_NEEDED_MESSAGE.getMessage());
+                msgForSend = new SendMessage(chatId, REPORT_NO_NEEDED_MESSAGE);
                 msgForSend.replyMarkup(howToMenu);
             }
         }
         if (message.text() == null && message.photo() != null && message.caption() == null) {
-            msgForSend = new SendMessage(chatId, REPORT_WITHOUT_DESCRIPTION_MESSAGE.getMessage() +
-                    "\n" + REPORT_FORM_MESSAGE.getMessage());
+            msgForSend = new SendMessage(chatId, REPORT_WITHOUT_DESCRIPTION_MESSAGE +
+                    "\n" + REPORT_FORM_MESSAGE);
             msgForSend.replyMarkup(adoptionMenu);
         }
         if (message.text() == null && message.contact() == null && message.photo().length == 0) {
@@ -198,72 +198,72 @@ public class SendMessageServiceImpl implements SendMessageService {
             clientService.createNewClient(message);
             msgForSend = new SendMessage(chatId, "Добрый день, " + message.from().firstName() + "! Рады приветствовать тебя в нашем приюте %shelter_name%!");
             msgForSend.replyMarkup(mainMenu);
-        } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU.getButtonName())) {
-            msgForSend = new SendMessage(chatId, START_MESSAGE.getMessage());
+        } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU)) {
+            msgForSend = new SendMessage(chatId, START_MESSAGE);
             msgForSend.replyMarkup(mainMenu);
-        } else if (msg.equals(SHELTER_INFO.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE.getMessage());
+        } else if (msg.equals(SHELTER_INFO)) {
+            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE);
             msgForSend.replyMarkup(shelterInfoMenu);
-        } else if (msg.equals(HOW_TO_TAKE_ANIMAL.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE.getMessage());
+        } else if (msg.equals(HOW_TO_TAKE_ANIMAL)) {
+            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(UPLOAD_REPORT.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE.getMessage());
+        } else if (msg.equals(UPLOAD_REPORT)) {
+            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE);
             msgForSend.replyMarkup(adoptionMenu);
 
             //    Меню о приюте
-        } else if (msg.equals(SHELTER_HISTORY.getButtonName())) {
-            msgForSend = new SendMessage(chatId, SHELTER_HISTORY_MESSAGE.getMessage());
+        } else if (msg.equals(SHELTER_HISTORY)) {
+            msgForSend = new SendMessage(chatId, SHELTER_HISTORY_MESSAGE);
             msgForSend.replyMarkup(shelterInfoMenu);
-        } else if (msg.equals(SHELTER_CONTACT.getButtonName())) {
-            msgForSend = new SendMessage(chatId, SHELTER_CONTACT_MESSAGE.getMessage());
+        } else if (msg.equals(SHELTER_CONTACT)) {
+            msgForSend = new SendMessage(chatId, SHELTER_CONTACT_MESSAGE);
             msgForSend.replyMarkup(shelterInfoMenu);
-        } else if (msg.equals(SHELTER_SECURITY.getButtonName())) {
-            msgForSend = new SendMessage(chatId, SHELTER_SECURITY_MESSAGE.getMessage());
+        } else if (msg.equals(SHELTER_SECURITY)) {
+            msgForSend = new SendMessage(chatId, SHELTER_SECURITY_MESSAGE);
             msgForSend.replyMarkup(shelterInfoMenu);
-        } else if (msg.equals(GET_CONTACT.getButtonName())) {
-            msgForSend = new SendMessage(chatId, GET_CONTACT_MESSAGE.getMessage());
+        } else if (msg.equals(GET_CONTACT)) {
+            msgForSend = new SendMessage(chatId, GET_CONTACT_MESSAGE);
             msgForSend.replyMarkup(contactMenu);
 
             //    Меню советов и рекомендаций
-        } else if (msg.equals(RULES_OF_ACQUAINTANCE.getButtonName())) {
-            msgForSend = new SendMessage(chatId, RULES_OF_ACQUAINTANCE_MESSAGE.getMessage());
+        } else if (msg.equals(RULES_OF_ACQUAINTANCE)) {
+            msgForSend = new SendMessage(chatId, RULES_OF_ACQUAINTANCE_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REQUIRED_DOCUMENTS.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REQUIRED_DOCUMENTS_MESSAGE.getMessage());
+        } else if (msg.equals(REQUIRED_DOCUMENTS)) {
+            msgForSend = new SendMessage(chatId, REQUIRED_DOCUMENTS_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REC_OF_TRANSPORTING.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REC_OF_TRANSPORTING_MESSAGE.getMessage());
+        } else if (msg.equals(REC_OF_TRANSPORTING)) {
+            msgForSend = new SendMessage(chatId, REC_OF_TRANSPORTING_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REC_HOME_PUPPY.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REC_HOME_PUPPY_MESSAGE.getMessage());
+        } else if (msg.equals(REC_HOME_PUPPY)) {
+            msgForSend = new SendMessage(chatId, REC_HOME_PUPPY_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REC_HOME_ADULT_DOG.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REC_HOME_ADULT_DOG_MESSAGE.getMessage());
+        } else if (msg.equals(REC_HOME_ADULT_DOG)) {
+            msgForSend = new SendMessage(chatId, REC_HOME_ADULT_DOG_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REC_HOME_DISABLED_DOG.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REC_HOME_DISABLED_DOG_MESSAGE.getMessage());
+        } else if (msg.equals(REC_HOME_DISABLED_DOG)) {
+            msgForSend = new SendMessage(chatId, REC_HOME_DISABLED_DOG_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(CYNOLOGIST_ADVICES.getButtonName())) {
-            msgForSend = new SendMessage(chatId, CYNOLOGIST_ADVICES_MESSAGE.getMessage());
+        } else if (msg.equals(CYNOLOGIST_ADVICES)) {
+            msgForSend = new SendMessage(chatId, CYNOLOGIST_ADVICES_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(LIST_OF_CYNOLOGISTS.getButtonName())) {
-            msgForSend = new SendMessage(chatId, LIST_OF_CYNOLOGISTS_MESSAGE.getMessage());
+        } else if (msg.equals(LIST_OF_CYNOLOGISTS)) {
+            msgForSend = new SendMessage(chatId, LIST_OF_CYNOLOGISTS_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REASONS_OF_DENY.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REASONS_OF_DENY_MESSAGE.getMessage());
+        } else if (msg.equals(REASONS_OF_DENY)) {
+            msgForSend = new SendMessage(chatId, REASONS_OF_DENY_MESSAGE);
             msgForSend.replyMarkup(howToMenu);
 
             //    Меню усыновителя
-        } else if (msg.equals(REPORT_FORM.getButtonName())) {
-            msgForSend = new SendMessage(chatId, REPORT_FORM_MESSAGE.getMessage());
+        } else if (msg.equals(REPORT_FORM)) {
+            msgForSend = new SendMessage(chatId, REPORT_FORM_MESSAGE);
             msgForSend.replyMarkup(adoptionMenu);
-        } else if (msg.equals(HOW_TO_SEND_REPORT.getButtonName())) {
-            msgForSend = new SendMessage(chatId, HOW_TO_SEND_REPORT_MESSAGE.getMessage());
+        } else if (msg.equals(HOW_TO_SEND_REPORT)) {
+            msgForSend = new SendMessage(chatId, HOW_TO_SEND_REPORT_MESSAGE);
             msgForSend.replyMarkup(adoptionMenu);
 
             //    Меню волонтера
-        } else if (msg.equals(GET_QUESTION.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
+        } else if (msg.equals(GET_QUESTION) && (volunteerService.isVolunteerExists(chatId))) {
             Question question = questionService.getOlderQuestion(message);
             if (question != null) {
                 msgForSend = new SendMessage(chatId, "Поступил вопрос от клиента:\n" + question.getQuestion() + "\nВаше следующее сообщение станет ответом на вопрос. Будьте внимательны!");
@@ -271,7 +271,7 @@ public class SendMessageServiceImpl implements SendMessageService {
                 msgForSend = new SendMessage(chatId, "Вопросов без ответа не осталось.");
                 msgForSend.replyMarkup(volunteerMenu);
             }
-        } else if (msg.equals(GET_REPORT.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
+        } else if (msg.equals(GET_REPORT) && (volunteerService.isVolunteerExists(chatId))) {
             Report report = reportService.getOlderReport(message);
             if (report != null) {
                 telegramBot.execute(new SendPhoto(chatId, report.getFileId()));
@@ -285,19 +285,19 @@ public class SendMessageServiceImpl implements SendMessageService {
                 msgForSend = new SendMessage(chatId, "Непросмотренных отчетов не осталось.");
                 msgForSend.replyMarkup(volunteerMenu);
             }
-        } else if (msg.equals("/volunteer") && (volunteerService.isVolunteerExists(chatId))){
-            msgForSend = new SendMessage(chatId, VOLUNTEER_MESSAGE.getMessage());
+        } else if (msg.equals("/volunteer") && (volunteerService.isVolunteerExists(chatId))) {
+            msgForSend = new SendMessage(chatId, VOLUNTEER_MESSAGE);
             msgForSend.replyMarkup(volunteerMenu);
-        } else if (msg.equals(OPEN_JOB.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
-            msgForSend = new SendMessage(chatId, OPEN_JOB_MESSAGE.getMessage());
+        } else if (msg.equals(OPEN_JOB) && (volunteerService.isVolunteerExists(chatId))) {
+            msgForSend = new SendMessage(chatId, OPEN_JOB_MESSAGE);
             volunteerService.openJob(message.chat().id());
             msgForSend.replyMarkup(volunteerMenu);
-        } else if (msg.equals(CLOSE_JOB.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
-            msgForSend = new SendMessage(chatId, CLOSE_JOB_MESSAGE.getMessage());
+        } else if (msg.equals(CLOSE_JOB) && (volunteerService.isVolunteerExists(chatId))) {
+            msgForSend = new SendMessage(chatId, CLOSE_JOB_MESSAGE);
             volunteerService.closeJob(message.chat().id());
             msgForSend.replyMarkup(volunteerMenu);
 
-        } else if (msg.equals(GET_LIST_OF_USERS.getButtonName()) && (volunteerService.isVolunteerExists(chatId))){
+        } else if (msg.equals(GET_LIST_OF_USERS) && (volunteerService.isVolunteerExists(chatId))) {
             List<Client> listOfClients = clientService.getListOfUsersWithoutAnimal();
             InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
                     new InlineKeyboardButton[]{});
@@ -311,26 +311,26 @@ public class SendMessageServiceImpl implements SendMessageService {
                 msgForSend = new SendMessage(chatId, clients.toString());
                 msgForSend.replyMarkup(inlineKeyboard);
             } else {
-                msgForSend = new SendMessage(chatId, NO_CLIENTS_WITHOUT_ANIMALS.getMessage());
+                msgForSend = new SendMessage(chatId, NO_CLIENTS_WITHOUT_ANIMALS);
                 msgForSend.replyMarkup(volunteerMenu);
             }
 
 
-        } else if ((volunteerService.isVolunteerExists(chatId)) && questionService.isItAnswer(message)){
+        } else if ((volunteerService.isVolunteerExists(chatId)) && questionService.isItAnswer(message)) {
             Question question = questionService.makeAnswer(message);
             msgForSend = new SendMessage(question.getChatId(), "Добрый день!\n\n" + message.text());
             msgForSend.replyMarkup(mainMenu);
 
             //     Вопрос волонтеру
-        } else if (msg.equals(CALL_VOLUNTEER.getButtonName())){
-            msgForSend = new SendMessage(chatId, CLIENT_TO_VOLUNTEER_MESSAGE.getMessage());
+        } else if (msg.equals(CALL_VOLUNTEER)) {
+            msgForSend = new SendMessage(chatId, CLIENT_TO_VOLUNTEER_MESSAGE);
             questionService.createEmptyQuestion(message);
-        } else if (questionService.isQuestionExist(chatId)){
-            msgForSend = new SendMessage(chatId, CLIENT_TO_VOLUNTEER_MESSAGE_SAVE.getMessage());
+        } else if (questionService.isQuestionExist(chatId)) {
+            msgForSend = new SendMessage(chatId, CLIENT_TO_VOLUNTEER_MESSAGE_SAVE);
             questionService.createNewQuestion(message);
             msgForSend.replyMarkup(mainMenu);
         } else {
-            msgForSend = new SendMessage(chatId, NON_COMMAND_MESSAGE.getMessage());
+            msgForSend = new SendMessage(chatId, NON_COMMAND_MESSAGE);
             msgForSend.replyMarkup(mainMenu);
         }
         return msgForSend;
