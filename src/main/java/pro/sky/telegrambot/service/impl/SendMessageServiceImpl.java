@@ -12,11 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.exceptions.IllegalMessageException;
 import pro.sky.telegrambot.model.Client;
+import pro.sky.telegrambot.model.MessageContainer;
 import pro.sky.telegrambot.model.Question;
 import pro.sky.telegrambot.model.Report;
 import pro.sky.telegrambot.service.*;
 
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static pro.sky.telegrambot.constant.Constants.*;
 
@@ -87,6 +91,7 @@ public class SendMessageServiceImpl implements SendMessageService {
             .oneTimeKeyboard(true)
             .selective(true);
 
+    private final Map<String, MessageContainer> messageContainerMap = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);
 
 
@@ -139,11 +144,11 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend = new SendMessage(chatId, "Клиент " + clientChatId + " получил животное.");
             msgForSend.replyMarkup(volunteerMenu);
         } else if (update.callbackQuery().data().startsWith("send_note")) {
-                dataWithoutCommand = update.callbackQuery().data().replace("send_note", "");
-                clientChatId = Long.parseLong(dataWithoutCommand);
-                msgForSend = new SendMessage(chatId, "Усыновителю " + clientChatId + " отправлено сообщение о некачественном отчёте.");
-                msgForSend.replyMarkup(volunteerMenu);
-                telegramBot.execute(new SendMessage(clientChatId, "Дорогой усыновитель, мы заметили, что ты заполняешь отчет не так подробно, как необходимо. Пожалуйста, подойди ответственнее к этому занятию. В противном случае волонтеры приюта будут обязаны самолично проверять условия содержания собаки"));
+            dataWithoutCommand = update.callbackQuery().data().replace("send_note", "");
+            clientChatId = Long.parseLong(dataWithoutCommand);
+            msgForSend = new SendMessage(chatId, "Усыновителю " + clientChatId + " отправлено сообщение о некачественном отчёте.");
+            msgForSend.replyMarkup(volunteerMenu);
+            telegramBot.execute(new SendMessage(clientChatId, "Дорогой усыновитель, мы заметили, что ты заполняешь отчет не так подробно, как необходимо. Пожалуйста, подойди ответственнее к этому занятию. В противном случае волонтеры приюта будут обязаны самолично проверять условия содержания собаки"));
         } else if (update.callbackQuery().data().startsWith("confirm_adoption")) {
             dataWithoutCommand = update.callbackQuery().data().replace("confirm_adoption", "");
             clientChatId = Long.parseLong(dataWithoutCommand);
@@ -201,67 +206,9 @@ public class SendMessageServiceImpl implements SendMessageService {
         } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU)) {
             msgForSend = new SendMessage(chatId, START_MESSAGE);
             msgForSend.replyMarkup(mainMenu);
-        } else if (msg.equals(SHELTER_INFO)) {
-            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE);
-            msgForSend.replyMarkup(shelterInfoMenu);
-        } else if (msg.equals(HOW_TO_TAKE_ANIMAL)) {
-            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(UPLOAD_REPORT)) {
-            msgForSend = new SendMessage(chatId, REQUEST_INFO_MESSAGE);
-            msgForSend.replyMarkup(adoptionMenu);
-
-            //    Меню о приюте
-        } else if (msg.equals(SHELTER_HISTORY)) {
-            msgForSend = new SendMessage(chatId, SHELTER_HISTORY_MESSAGE);
-            msgForSend.replyMarkup(shelterInfoMenu);
-        } else if (msg.equals(SHELTER_CONTACT)) {
-            msgForSend = new SendMessage(chatId, SHELTER_CONTACT_MESSAGE);
-            msgForSend.replyMarkup(shelterInfoMenu);
-        } else if (msg.equals(SHELTER_SECURITY)) {
-            msgForSend = new SendMessage(chatId, SHELTER_SECURITY_MESSAGE);
-            msgForSend.replyMarkup(shelterInfoMenu);
-        } else if (msg.equals(GET_CONTACT)) {
-            msgForSend = new SendMessage(chatId, GET_CONTACT_MESSAGE);
-            msgForSend.replyMarkup(contactMenu);
-
-            //    Меню советов и рекомендаций
-        } else if (msg.equals(RULES_OF_ACQUAINTANCE)) {
-            msgForSend = new SendMessage(chatId, RULES_OF_ACQUAINTANCE_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REQUIRED_DOCUMENTS)) {
-            msgForSend = new SendMessage(chatId, REQUIRED_DOCUMENTS_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REC_OF_TRANSPORTING)) {
-            msgForSend = new SendMessage(chatId, REC_OF_TRANSPORTING_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REC_HOME_PUPPY)) {
-            msgForSend = new SendMessage(chatId, REC_HOME_PUPPY_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REC_HOME_ADULT_DOG)) {
-            msgForSend = new SendMessage(chatId, REC_HOME_ADULT_DOG_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REC_HOME_DISABLED_DOG)) {
-            msgForSend = new SendMessage(chatId, REC_HOME_DISABLED_DOG_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(CYNOLOGIST_ADVICES)) {
-            msgForSend = new SendMessage(chatId, CYNOLOGIST_ADVICES_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(LIST_OF_CYNOLOGISTS)) {
-            msgForSend = new SendMessage(chatId, LIST_OF_CYNOLOGISTS_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-        } else if (msg.equals(REASONS_OF_DENY)) {
-            msgForSend = new SendMessage(chatId, REASONS_OF_DENY_MESSAGE);
-            msgForSend.replyMarkup(howToMenu);
-
-            //    Меню усыновителя
-        } else if (msg.equals(REPORT_FORM)) {
-            msgForSend = new SendMessage(chatId, REPORT_FORM_MESSAGE);
-            msgForSend.replyMarkup(adoptionMenu);
-        } else if (msg.equals(HOW_TO_SEND_REPORT)) {
-            msgForSend = new SendMessage(chatId, HOW_TO_SEND_REPORT_MESSAGE);
-            msgForSend.replyMarkup(adoptionMenu);
-
+        } else if (messageContainerMap.containsKey(msg)) {
+            msgForSend = new SendMessage(chatId, messageContainerMap.get(msg).getMessage());
+            msgForSend.replyMarkup(messageContainerMap.get(msg).getKeyboard());
             //    Меню волонтера
         } else if (msg.equals(GET_QUESTION) && (volunteerService.isVolunteerExists(chatId))) {
             Question question = questionService.getOlderQuestion(message);
@@ -334,5 +281,28 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend.replyMarkup(mainMenu);
         }
         return msgForSend;
+    }
+
+    @PostConstruct
+    private void fillMessageContainer() {
+
+        messageContainerMap.put(SHELTER_INFO, new MessageContainer(REQUEST_INFO_MESSAGE, shelterInfoMenu));
+        messageContainerMap.put(HOW_TO_TAKE_ANIMAL, new MessageContainer(REQUEST_INFO_MESSAGE, howToMenu));
+        messageContainerMap.put(UPLOAD_REPORT, new MessageContainer(REQUEST_INFO_MESSAGE, adoptionMenu));
+        messageContainerMap.put(SHELTER_HISTORY, new MessageContainer(SHELTER_HISTORY_MESSAGE, shelterInfoMenu));
+        messageContainerMap.put(SHELTER_CONTACT, new MessageContainer(SHELTER_CONTACT_MESSAGE, shelterInfoMenu));
+        messageContainerMap.put(SHELTER_SECURITY, new MessageContainer(SHELTER_SECURITY_MESSAGE, shelterInfoMenu));
+        messageContainerMap.put(GET_CONTACT, new MessageContainer(GET_CONTACT_MESSAGE, contactMenu));
+        messageContainerMap.put(RULES_OF_ACQUAINTANCE, new MessageContainer(RULES_OF_ACQUAINTANCE_MESSAGE, howToMenu));
+        messageContainerMap.put(REQUIRED_DOCUMENTS, new MessageContainer(REQUIRED_DOCUMENTS_MESSAGE, howToMenu));
+        messageContainerMap.put(REC_OF_TRANSPORTING, new MessageContainer(REC_OF_TRANSPORTING_MESSAGE, howToMenu));
+        messageContainerMap.put(REC_HOME_PUPPY, new MessageContainer(REC_HOME_PUPPY_MESSAGE, howToMenu));
+        messageContainerMap.put(REC_HOME_ADULT_DOG, new MessageContainer(REC_HOME_ADULT_DOG_MESSAGE, howToMenu));
+        messageContainerMap.put(REC_HOME_DISABLED_DOG, new MessageContainer(REC_HOME_DISABLED_DOG_MESSAGE, howToMenu));
+        messageContainerMap.put(CYNOLOGIST_ADVICES, new MessageContainer(CYNOLOGIST_ADVICES_MESSAGE, howToMenu));
+        messageContainerMap.put(LIST_OF_CYNOLOGISTS, new MessageContainer(LIST_OF_CYNOLOGISTS_MESSAGE, howToMenu));
+        messageContainerMap.put(REASONS_OF_DENY, new MessageContainer(REASONS_OF_DENY_MESSAGE, howToMenu));
+        messageContainerMap.put(REPORT_FORM, new MessageContainer(REPORT_FORM_MESSAGE, adoptionMenu));
+        messageContainerMap.put(HOW_TO_SEND_REPORT, new MessageContainer(HOW_TO_SEND_REPORT_MESSAGE, adoptionMenu));
     }
 }
