@@ -12,4 +12,10 @@ public interface VolunteerService {
     void closeJob(Long chatId);
 
     List<Volunteer> getAllVolunteers();
+
+    Volunteer createVolunteer(Volunteer volunteer);
+
+    Volunteer editVolunteer(Volunteer volunteer);
+
+    void deleteVolunteer(long id);
 }

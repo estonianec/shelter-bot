@@ -35,4 +35,22 @@ public class VolunteerServiceImpl implements VolunteerService {
         return volunteerRepository.getAllBy();
     }
 
+    @Override
+    public Volunteer createVolunteer(Volunteer volunteer) {
+        return volunteerRepository.save(volunteer);
+    }
+
+    @Override
+    public Volunteer editVolunteer(Volunteer volunteer) {
+        if (isVolunteerExists(volunteer.getChatId())) {
+            return volunteerRepository.save(volunteer);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteVolunteer(long id) {
+        volunteerRepository.deleteById(id);
+    }
+
 }

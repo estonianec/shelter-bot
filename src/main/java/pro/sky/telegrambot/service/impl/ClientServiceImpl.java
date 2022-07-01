@@ -10,6 +10,7 @@ import pro.sky.telegrambot.service.ClientService;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -85,5 +86,23 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Client getClientByChatId(Long clientChatId) {
         return clientRepository.getClientByChatId(clientChatId);
+    }
+
+    @Override
+    public Collection<Client> getAllClients() {
+        return clientRepository.findAll();
+    }
+
+    @Override
+    public Client editClient(Client client) {
+        if (isClientExists(client.getChatId())) {
+            return clientRepository.save(client);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteClient(long id) {
+        clientRepository.deleteById(id);
     }
 }
