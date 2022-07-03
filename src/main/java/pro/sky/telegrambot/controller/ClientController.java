@@ -19,7 +19,7 @@ public class ClientController {
 
     @PostMapping
     public Client createClient(@RequestBody Client client) {
-        return null;
+        return clientService.createClient(client);
     }
 
     @GetMapping

@@ -34,4 +34,6 @@ public interface ClientService {
     Client editClient(Client client);
 
     void deleteClient(long id);
+
+    Client createClient(Client client);
 }
