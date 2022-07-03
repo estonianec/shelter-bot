@@ -40,7 +40,7 @@ public class ClientController {
         return ResponseEntity.ok(entity);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping()
     public ResponseEntity<Client> deleteClient(@RequestParam("id") long id) {
         clientService.deleteClient(id);
         return ResponseEntity.ok().build();
