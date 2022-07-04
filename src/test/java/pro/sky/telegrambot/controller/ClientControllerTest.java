@@ -18,7 +18,6 @@ import pro.sky.telegrambot.repository.ClientRepository;
 import pro.sky.telegrambot.service.impl.ClientServiceImpl;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -118,8 +117,8 @@ class ClientControllerTest {
         newClient.setName("TestName2");
         newClient.setLastName("TestLastName2");
         newClient.setPhone("+7914222");
-        newClient.setAdoptionDate(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS));
-        newClient.setProbationDate(LocalDateTime.now().plusDays(31).truncatedTo(ChronoUnit.DAYS));
+        newClient.setAdoptionDate(LocalDateTime.now().plusDays(1));
+        newClient.setProbationDate(LocalDateTime.now().plusDays(31));
         newClient.setAdoptionStatus(1);
         when(clientRepository.getClientByChatId(any())).thenReturn(client);
         when(clientRepository.save(any(Client.class))).thenReturn(newClient);
@@ -134,8 +133,8 @@ class ClientControllerTest {
                 .andExpect(jsonPath("$.name").value(newClient.getName()))
                 .andExpect(jsonPath("$.phone").value(newClient.getPhone()))
                 .andExpect(jsonPath("$.lastName").value(newClient.getLastName()))
-                .andExpect(jsonPath("$.adoptionDate").value(client.getAdoptionDate().toString().substring(0, client.getAdoptionDate().toString().length() - 2)))
-                .andExpect(jsonPath("$.probationDate").value(client.getProbationDate().toString().substring(0, client.getAdoptionDate().toString().length() - 2)))
+                .andExpect(jsonPath("$.adoptionDate").value(newClient.getAdoptionDate().toString().substring(0, newClient.getAdoptionDate().toString().length() - 2)))
+                .andExpect(jsonPath("$.probationDate").value(newClient.getProbationDate().toString().substring(0, newClient.getProbationDate().toString().length() - 2)))
                 .andExpect(jsonPath("$.adoptionStatus").value(newClient.getAdoptionStatus()));
     }
 
