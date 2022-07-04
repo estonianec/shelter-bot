@@ -3,6 +3,9 @@ package pro.sky.telegrambot.model;
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * Класс используется для хранения вопросов от клиентов для волонтеров.
+ */
 @Entity
 public class Question {
 
@@ -11,6 +14,9 @@ public class Question {
     Long id;
     Long chatId;
     String question;
+    /**
+     * Параметр используется, как флаг, который маркирует вопрос, как отвеченный.
+     */
     Boolean isAnswered;
     Boolean isAsked;
     @ManyToOne
@@ -32,6 +38,9 @@ public class Question {
         return isAsked;
     }
 
+    /**
+     * Метод маркирует вопрос, как заданный волонтеру
+     */
     public void setAsked(Boolean asked) {
         isAsked = asked;
     }
