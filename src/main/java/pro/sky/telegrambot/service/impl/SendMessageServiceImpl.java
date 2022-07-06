@@ -42,26 +42,35 @@ public class SendMessageServiceImpl implements SendMessageService {
         this.reportService = reportService;
     }
 
-    //        Стартовое меню
+    //        Главное меню
     Keyboard mainMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_INFO, HOW_TO_TAKE_ANIMAL},
-            new String[]{UPLOAD_REPORT, CALL_VOLUNTEER})
+            new String[]{UPLOAD_REPORT, CALL_VOLUNTEER},
+            new String[]{TO_CHOICE_MENU})
+            .resizeKeyboard(true)
+            .oneTimeKeyboard(true)
+            .selective(true);
+    //        Стартовое меню
+    Keyboard choiceMenu = new ReplyKeyboardMarkup(
+            SHELTER_DOG, SHELTER_CAT)
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
     //        Меню о приюте собак
     Keyboard shelterInfoMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_HISTORY, SHELTER_CONTACT},
-            new String[]{SHELTER_SECURITY, GET_CONTACT},
-            new String[]{CALL_VOLUNTEER, TO_MAIN_MENU})
+            new String[]{SHELTER_SECURITY, SECURITY_CONTACT},
+            new String[]{GET_CONTACT, CALL_VOLUNTEER},
+            new String[]{TO_MAIN_MENU})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
     //        Меню о приюте кошек
     Keyboard shelterInfoMenuCat = new ReplyKeyboardMarkup(
             new String[]{SHELTER_HISTORY_CAT, SHELTER_CONTACT_CAT},
-            new String[]{SHELTER_SECURITY_CAT, GET_CONTACT},
-            new String[]{CALL_VOLUNTEER, TO_MAIN_MENU})
+            new String[]{SHELTER_SECURITY, SECURITY_CONTACT},
+            new String[]{GET_CONTACT, CALL_VOLUNTEER},
+            new String[]{TO_MAIN_MENU})
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
@@ -211,9 +220,20 @@ public class SendMessageServiceImpl implements SendMessageService {
         Long chatId = message.chat().id();
         if (!clientService.isClientExists(chatId)) {
             clientService.createNewClient(message);
-            msgForSend = new SendMessage(chatId, "Добрый день, " + message.from().firstName() + "! Рады приветствовать тебя в нашем приюте %shelter_name%!");
-            msgForSend.replyMarkup(mainMenu);
-        } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU)) {
+            msgForSend = new SendMessage(chatId, "Добрый день, " + message.from().firstName() + "! Рады приветствовать тебя в нашем приюте %shelter_name%! Выбери пожалуйста приют:");
+            msgForSend.replyMarkup(choiceMenu);
+        } else  if (msg.equals(SHELTER_DOG)) {
+                clientService.setAnimalType(chatId, 1);
+                msgForSend = new SendMessage(chatId, SHELTER_DOG);
+                msgForSend.replyMarkup(mainMenu);
+        } else if (msg.equals(SHELTER_CAT)) {
+                clientService.setAnimalType(chatId, 2);
+                msgForSend = new SendMessage(chatId, SHELTER_CAT);
+                msgForSend.replyMarkup(mainMenu);
+        } else if (msg.equals("/start") || msg.equals(TO_CHOICE_MENU)) {
+            msgForSend = new SendMessage(chatId, START_MESSAGE);
+            msgForSend.replyMarkup(choiceMenu);
+        } else if (msg.equals(TO_MAIN_MENU)) {
             msgForSend = new SendMessage(chatId, START_MESSAGE);
             msgForSend.replyMarkup(mainMenu);
             // Вызываем мапу
@@ -313,6 +333,7 @@ public class SendMessageServiceImpl implements SendMessageService {
         messageContainerDogMap.put(SHELTER_HISTORY, new MessageContainer(SHELTER_HISTORY_MESSAGE, shelterInfoMenu));
         messageContainerDogMap.put(SHELTER_CONTACT, new MessageContainer(SHELTER_CONTACT_MESSAGE, shelterInfoMenu));
         messageContainerDogMap.put(SHELTER_SECURITY, new MessageContainer(SHELTER_SECURITY_MESSAGE, shelterInfoMenu));
+        messageContainerDogMap.put(SECURITY_CONTACT, new MessageContainer(SECURITY_CONTACT_MESSAGE, shelterInfoMenu));
         messageContainerDogMap.put(HOW_TO_TAKE_ANIMAL, new MessageContainer(REQUEST_INFO_MESSAGE, howToMenuDog));
         messageContainerDogMap.put(RULES_OF_ACQUAINTANCE, new MessageContainer(RULES_OF_ACQUAINTANCE_MESSAGE, howToMenuDog));
         messageContainerDogMap.put(REQUIRED_DOCUMENTS, new MessageContainer(REQUIRED_DOCUMENTS_MESSAGE, howToMenuDog));
@@ -328,6 +349,7 @@ public class SendMessageServiceImpl implements SendMessageService {
         messageContainerCatMap.put(SHELTER_HISTORY_CAT, new MessageContainer(SHELTER_HISTORY_CAT_MESSAGE, shelterInfoMenuCat));
         messageContainerCatMap.put(SHELTER_CONTACT_CAT, new MessageContainer(SHELTER_CONTACT_CAT_MESSAGE, shelterInfoMenuCat));
         messageContainerCatMap.put(SHELTER_SECURITY_CAT, new MessageContainer(SHELTER_SECURITY_CAT_MESSAGE, shelterInfoMenuCat));
+        messageContainerCatMap.put(SECURITY_CONTACT_CAT, new MessageContainer(SECURITY_CONTACT_CAT_MESSAGE, shelterInfoMenuCat));
         messageContainerCatMap.put(HOW_TO_TAKE_ANIMAL, new MessageContainer(REQUEST_INFO_MESSAGE, howToMenuCat));
         messageContainerCatMap.put(RULES_OF_ACQUAINTANCE, new MessageContainer(RULES_OF_ACQUAINTANCE_MESSAGE, howToMenuCat));
         messageContainerCatMap.put(REQUIRED_DOCUMENTS, new MessageContainer(REQUIRED_DOCUMENTS_MESSAGE, howToMenuCat));

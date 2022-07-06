@@ -110,4 +110,9 @@ public class ClientServiceImpl implements ClientService {
     public Client createClient(Client client) {
         return clientRepository.save(client);
     }
+
+    @Override
+    public void setAnimalType(Long chatId, int type) {
+        clientRepository.setAnimalType(chatId, type);
+    }
 }

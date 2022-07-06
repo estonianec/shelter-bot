@@ -39,4 +39,9 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     @Modifying
     @Query(value = "UPDATE client SET probation_date = ?1 WHERE chat_id = ?2", nativeQuery = true)
     void addProbationDays(LocalDateTime newDate, Long chatId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE client SET animal_type = ?2 WHERE chat_id = ?1", nativeQuery = true)
+    void setAnimalType(Long chatId, int type);
 }
