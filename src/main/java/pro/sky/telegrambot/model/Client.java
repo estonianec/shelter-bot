@@ -16,9 +16,18 @@ public class Client {
     LocalDateTime adoptionDate; // Дата взятия животного
     LocalDateTime probationDate; // Дата окончания испытательного срока
     int adoptionStatus; //0 - без животного, 1 - на испытательном сроке, 2 - усыновление принято, 3 - в усыновлении отказано
+    int animalType; //0 - животное не выбрано, 1 - собака, 2 - кошка
 
     public Client() {
 
+    }
+
+    public int getAnimalType() {
+        return animalType;
+    }
+
+    public void setAnimalType(int animalType) {
+        this.animalType = animalType;
     }
 
     public int getAdoptionStatus() {
