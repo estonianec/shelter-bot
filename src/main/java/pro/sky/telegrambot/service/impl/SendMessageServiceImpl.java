@@ -177,18 +177,8 @@ public class SendMessageServiceImpl implements SendMessageService {
             msgForSend = new SendMessage(chatId, "Усыновителю " + clientChatId + " будет установлен новый испытательный срок. Выберите из меню, какое кол-во дней добавить к испытательному сроку усыновителя.");
             InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
                     new InlineKeyboardButton[]{});
-            int day = 0;
-            for (int i = 0; i < 10; i++) {
-                inlineKeyboard.addRow(new InlineKeyboardButton(day + 1 + "").callbackData("add_probation_days" + (day + 1) + "." + clientChatId),
-                        new InlineKeyboardButton(day + 2 + "").callbackData("add_probation_days" + (day + 2) + "." + clientChatId),
-                        new InlineKeyboardButton(day + 3 + "").callbackData("add_probation_days" + (day + 3) + "." + clientChatId),
-                        new InlineKeyboardButton(day + 4 + "").callbackData("add_probation_days" + (day + 4) + "." + clientChatId),
-                        new InlineKeyboardButton(day + 5 + "").callbackData("add_probation_days" + (day + 5) + "." + clientChatId),
-                        new InlineKeyboardButton(day + 6 + "").callbackData("add_probation_days" + (day + 6) + "." + clientChatId),
-                        new InlineKeyboardButton(day + 7 + "").callbackData("add_probation_days" + (day + 7) + "." + clientChatId),
-                        new InlineKeyboardButton(day + 8 + "").callbackData("add_probation_days" + (day + 8) + "." + clientChatId));
-                day += 8;
-            }
+                inlineKeyboard.addRow(new InlineKeyboardButton("14").callbackData("add_probation_days14." + clientChatId),
+                        new InlineKeyboardButton("30").callbackData("add_probation_days30." + clientChatId));
             msgForSend.replyMarkup(inlineKeyboard);
         } else throw new IllegalArgumentException();
 
