@@ -3,6 +3,8 @@ package pro.sky.telegrambot.constant;
 public class Constants {
     //Buttons
     public static final String SHELTER_INFO = "🗺 Информация о приюте";
+    public static final String SHELTER_DOG = "Приют собак";
+    public static final String SHELTER_CAT = "Приют кошек";
     public static final String SHELTER_INFO_CAT = "🗺 Информация о приюте";
     public static final String HOW_TO_TAKE_ANIMAL = "🐶 Как взять животное из приюта";
     public static final String UPLOAD_REPORT = "📸 Загрузить отчет";
@@ -13,9 +15,12 @@ public class Constants {
     public static final String SHELTER_HISTORY_CAT = "История приюта";
     public static final String SHELTER_CONTACT_CAT = "Расписание работы приюта, адрес и схема проезда";
     public static final String SHELTER_SECURITY_CAT = "Общие рекомендации о технике безопасности на территории приюта";
+    public static final String SECURITY_CONTACT = "Контактные данные охраны для оформления пропуска на машину";
+    public static final String SECURITY_CONTACT_CAT = "Контактные данные охраны для оформления пропуска на машину";
     public static final String GET_CONTACT = "Предоставить контактные данные приюту";
     public static final String UPLOAD_CONTACT = "Отправить Ваши контактные данные";
     public static final String TO_MAIN_MENU = "🔙 Вернуться в главное меню";
+    public static final String TO_CHOICE_MENU = "🔙 Вернуться в меню выбора животного";
     public static final String RULES_OF_ACQUAINTANCE = "Правила знакомства с животным";
     public static final String REQUIRED_DOCUMENTS = "Список необходимых документов";
     public static final String REC_OF_TRANSPORTING = "Рекомендации по транспортировке животного";
@@ -34,7 +39,7 @@ public class Constants {
     public static final String OPEN_JOB = "Начать работу";
     public static final String CLOSE_JOB = "Закончить работу";
     //Messages
-    public static final String START_MESSAGE = "Добро пожаловать в наш бот. \uD83E\uDEE0";
+    public static final String START_MESSAGE = "Добро пожаловать в главное меню.";
     public static final String REQUEST_INFO_MESSAGE = "О чём конкретно вы хотели бы узнать? \uD83E\uDEE0";
     public static final String REQUEST_INFO_CAT_MESSAGE = "О чём конкретно вы хотели бы узнать? \uD83E\uDEE0";
     public static final String NON_COMMAND_MESSAGE = "Пожалуйста, воспользуйтесь меню\uD83D\uDC47";
@@ -43,13 +48,15 @@ public class Constants {
     public static final String CLIENT_TO_VOLUNTEER_MESSAGE_SAVE = "Ваше сообщение получено и первый освободившийся волонтер Вам на него ответит.";
     //    Ответы на команды с клавиатуры
 
-    //    Меню о приюте,
+    //    Меню о приюте
     public static final String SHELTER_HISTORY_MESSAGE = "История приюта собаки";
     public static final String SHELTER_CONTACT_MESSAGE = "Расписание работы приюта, адрес и схема проезда";
     public static final String SHELTER_SECURITY_MESSAGE = "Общие рекомендации о технике безопасности на территории приюта";
+    public static final String SECURITY_CONTACT_MESSAGE = "Контактные данные охраны для оформления пропуска на машину";
     public static final String SHELTER_HISTORY_CAT_MESSAGE = "История приюта кошечки";
     public static final String SHELTER_CONTACT_CAT_MESSAGE = "Расписание работы приюта, адрес и схема проезда";
     public static final String SHELTER_SECURITY_CAT_MESSAGE = "Общие рекомендации о технике безопасности на территории приюта";
+    public static final String SECURITY_CONTACT_CAT_MESSAGE = "Контактные данные охраны для оформления пропуска на машину";
     public static final String GET_CONTACT_MESSAGE = "Просим Вас предоставить Ваши контактные данные приюту, воспользуйтесь клавиатурой\uD83D\uDC47";
     public static final String SAVED_CONTACT_MESSAGE = "Ваш контакт сохранен\uD83D\uDE4F";
 

@@ -36,4 +36,6 @@ public interface ClientService {
     void deleteClient(long id);
 
     Client createClient(Client client);
+
+    void setAnimalType(Long chatId, int type);
 }
