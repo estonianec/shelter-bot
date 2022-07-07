@@ -49,7 +49,7 @@ public class SendMessageServiceImpl implements SendMessageService {
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
-    //        Меню о приюте
+    //        Меню о приюте собак
     Keyboard shelterInfoMenu = new ReplyKeyboardMarkup(
             new String[]{SHELTER_HISTORY, SHELTER_CONTACT},
             new String[]{SHELTER_SECURITY, GET_CONTACT},
@@ -57,12 +57,30 @@ public class SendMessageServiceImpl implements SendMessageService {
             .resizeKeyboard(true)
             .oneTimeKeyboard(true)
             .selective(true);
-    //        Меню советов и рекомендаций
-    Keyboard howToMenu = new ReplyKeyboardMarkup(
+    //        Меню о приюте кошек
+    Keyboard shelterInfoMenuCat = new ReplyKeyboardMarkup(
+            new String[]{SHELTER_HISTORY_CAT, SHELTER_CONTACT_CAT},
+            new String[]{SHELTER_SECURITY_CAT, GET_CONTACT},
+            new String[]{CALL_VOLUNTEER, TO_MAIN_MENU})
+            .resizeKeyboard(true)
+            .oneTimeKeyboard(true)
+            .selective(true);
+    //        Меню советов и рекомендаций для собак
+    Keyboard howToMenuDog = new ReplyKeyboardMarkup(
             new String[]{RULES_OF_ACQUAINTANCE, REQUIRED_DOCUMENTS},
             new String[]{REC_OF_TRANSPORTING, REC_HOME_PUPPY},
             new String[]{REC_HOME_ADULT_DOG, REC_HOME_DISABLED_DOG},
             new String[]{CYNOLOGIST_ADVICES, LIST_OF_CYNOLOGISTS},
+            new String[]{REASONS_OF_DENY, GET_CONTACT},
+            new String[]{CALL_VOLUNTEER, TO_MAIN_MENU})
+            .resizeKeyboard(true)
+            .oneTimeKeyboard(true)
+            .selective(true);
+    //        Меню советов и рекомендаций для кошек
+    Keyboard howToMenuCat = new ReplyKeyboardMarkup(
+            new String[]{RULES_OF_ACQUAINTANCE, REQUIRED_DOCUMENTS},
+            new String[]{REC_OF_TRANSPORTING, REC_HOME_KITTY},
+            new String[]{REC_HOME_ADULT_DOG, REC_HOME_DISABLED_DOG},
             new String[]{REASONS_OF_DENY, GET_CONTACT},
             new String[]{CALL_VOLUNTEER, TO_MAIN_MENU})
             .resizeKeyboard(true)
@@ -92,6 +110,8 @@ public class SendMessageServiceImpl implements SendMessageService {
             .selective(true);
 
     private final Map<String, MessageContainer> messageContainerMap = new HashMap<>();
+    private final Map<String, MessageContainer> messageContainerDogMap = new HashMap<>();
+    private final Map<String, MessageContainer> messageContainerCatMap = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);
 
 
@@ -116,7 +136,7 @@ public class SendMessageServiceImpl implements SendMessageService {
                 msgForSend.replyMarkup(adoptionMenu);
             } else {
                 msgForSend = new SendMessage(chatId, REPORT_NO_NEEDED_MESSAGE);
-                msgForSend.replyMarkup(howToMenu);
+                msgForSend.replyMarkup(howToMenuDog);
             }
         }
         if (message.text() == null && message.photo() != null && message.caption() == null) {
@@ -196,9 +216,16 @@ public class SendMessageServiceImpl implements SendMessageService {
         } else if (msg.equals("/start") || msg.equals(TO_MAIN_MENU)) {
             msgForSend = new SendMessage(chatId, START_MESSAGE);
             msgForSend.replyMarkup(mainMenu);
+            // Вызываем мапу
         } else if (messageContainerMap.containsKey(msg)) {
             msgForSend = new SendMessage(chatId, messageContainerMap.get(msg).getMessage());
             msgForSend.replyMarkup(messageContainerMap.get(msg).getKeyboard());
+        } else if (messageContainerDogMap.containsKey(msg) && clientService.getClientByChatId(chatId).getAnimalType() == 1) {
+            msgForSend = new SendMessage(chatId, messageContainerDogMap.get(msg).getMessage());
+            msgForSend.replyMarkup(messageContainerDogMap.get(msg).getKeyboard());
+        } else if (messageContainerCatMap.containsKey(msg) && clientService.getClientByChatId(chatId).getAnimalType() == 2) {
+            msgForSend = new SendMessage(chatId, messageContainerCatMap.get(msg).getMessage());
+            msgForSend.replyMarkup(messageContainerCatMap.get(msg).getKeyboard());
             //    Меню волонтера
         } else if (msg.equals(GET_QUESTION) && (volunteerService.isVolunteerExists(chatId))) {
             Question question = questionService.getOlderQuestion(message);
@@ -275,24 +302,42 @@ public class SendMessageServiceImpl implements SendMessageService {
 
     @PostConstruct
     private void fillMessageContainer() {
+        //всем
 
-        messageContainerMap.put(SHELTER_INFO, new MessageContainer(REQUEST_INFO_MESSAGE, shelterInfoMenu));
-        messageContainerMap.put(HOW_TO_TAKE_ANIMAL, new MessageContainer(REQUEST_INFO_MESSAGE, howToMenu));
-        messageContainerMap.put(UPLOAD_REPORT, new MessageContainer(REQUEST_INFO_MESSAGE, adoptionMenu));
-        messageContainerMap.put(SHELTER_HISTORY, new MessageContainer(SHELTER_HISTORY_MESSAGE, shelterInfoMenu));
-        messageContainerMap.put(SHELTER_CONTACT, new MessageContainer(SHELTER_CONTACT_MESSAGE, shelterInfoMenu));
-        messageContainerMap.put(SHELTER_SECURITY, new MessageContainer(SHELTER_SECURITY_MESSAGE, shelterInfoMenu));
-        messageContainerMap.put(GET_CONTACT, new MessageContainer(GET_CONTACT_MESSAGE, contactMenu));
-        messageContainerMap.put(RULES_OF_ACQUAINTANCE, new MessageContainer(RULES_OF_ACQUAINTANCE_MESSAGE, howToMenu));
-        messageContainerMap.put(REQUIRED_DOCUMENTS, new MessageContainer(REQUIRED_DOCUMENTS_MESSAGE, howToMenu));
-        messageContainerMap.put(REC_OF_TRANSPORTING, new MessageContainer(REC_OF_TRANSPORTING_MESSAGE, howToMenu));
-        messageContainerMap.put(REC_HOME_PUPPY, new MessageContainer(REC_HOME_PUPPY_MESSAGE, howToMenu));
-        messageContainerMap.put(REC_HOME_ADULT_DOG, new MessageContainer(REC_HOME_ADULT_DOG_MESSAGE, howToMenu));
-        messageContainerMap.put(REC_HOME_DISABLED_DOG, new MessageContainer(REC_HOME_DISABLED_DOG_MESSAGE, howToMenu));
-        messageContainerMap.put(CYNOLOGIST_ADVICES, new MessageContainer(CYNOLOGIST_ADVICES_MESSAGE, howToMenu));
-        messageContainerMap.put(LIST_OF_CYNOLOGISTS, new MessageContainer(LIST_OF_CYNOLOGISTS_MESSAGE, howToMenu));
-        messageContainerMap.put(REASONS_OF_DENY, new MessageContainer(REASONS_OF_DENY_MESSAGE, howToMenu));
         messageContainerMap.put(REPORT_FORM, new MessageContainer(REPORT_FORM_MESSAGE, adoptionMenu));
         messageContainerMap.put(HOW_TO_SEND_REPORT, new MessageContainer(HOW_TO_SEND_REPORT_MESSAGE, adoptionMenu));
+        messageContainerMap.put(UPLOAD_REPORT, new MessageContainer(REQUEST_INFO_MESSAGE, adoptionMenu));
+        messageContainerMap.put(GET_CONTACT, new MessageContainer(GET_CONTACT_MESSAGE, contactMenu));
+        //собакам
+        messageContainerDogMap.put(SHELTER_INFO, new MessageContainer(REQUEST_INFO_MESSAGE, shelterInfoMenu));
+        messageContainerDogMap.put(SHELTER_HISTORY, new MessageContainer(SHELTER_HISTORY_MESSAGE, shelterInfoMenu));
+        messageContainerDogMap.put(SHELTER_CONTACT, new MessageContainer(SHELTER_CONTACT_MESSAGE, shelterInfoMenu));
+        messageContainerDogMap.put(SHELTER_SECURITY, new MessageContainer(SHELTER_SECURITY_MESSAGE, shelterInfoMenu));
+        messageContainerDogMap.put(HOW_TO_TAKE_ANIMAL, new MessageContainer(REQUEST_INFO_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(RULES_OF_ACQUAINTANCE, new MessageContainer(RULES_OF_ACQUAINTANCE_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(REQUIRED_DOCUMENTS, new MessageContainer(REQUIRED_DOCUMENTS_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(REC_OF_TRANSPORTING, new MessageContainer(REC_OF_TRANSPORTING_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(REC_HOME_PUPPY, new MessageContainer(REC_HOME_PUPPY_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(REC_HOME_ADULT_DOG, new MessageContainer(REC_HOME_ADULT_DOG_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(REC_HOME_DISABLED_DOG, new MessageContainer(REC_HOME_DISABLED_DOG_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(CYNOLOGIST_ADVICES, new MessageContainer(CYNOLOGIST_ADVICES_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(LIST_OF_CYNOLOGISTS, new MessageContainer(LIST_OF_CYNOLOGISTS_MESSAGE, howToMenuDog));
+        messageContainerDogMap.put(REASONS_OF_DENY, new MessageContainer(REASONS_OF_DENY_MESSAGE, howToMenuDog));
+        //кошкам
+        messageContainerCatMap.put(SHELTER_INFO_CAT, new MessageContainer(REQUEST_INFO_CAT_MESSAGE, shelterInfoMenuCat));
+        messageContainerCatMap.put(SHELTER_HISTORY_CAT, new MessageContainer(SHELTER_HISTORY_CAT_MESSAGE, shelterInfoMenuCat));
+        messageContainerCatMap.put(SHELTER_CONTACT_CAT, new MessageContainer(SHELTER_CONTACT_CAT_MESSAGE, shelterInfoMenuCat));
+        messageContainerCatMap.put(SHELTER_SECURITY_CAT, new MessageContainer(SHELTER_SECURITY_CAT_MESSAGE, shelterInfoMenuCat));
+        messageContainerCatMap.put(HOW_TO_TAKE_ANIMAL, new MessageContainer(REQUEST_INFO_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(RULES_OF_ACQUAINTANCE, new MessageContainer(RULES_OF_ACQUAINTANCE_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(REQUIRED_DOCUMENTS, new MessageContainer(REQUIRED_DOCUMENTS_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(REC_OF_TRANSPORTING, new MessageContainer(REC_OF_TRANSPORTING_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(REC_HOME_KITTY, new MessageContainer(REC_HOME_KITTY_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(REC_HOME_ADULT_DOG, new MessageContainer(REC_HOME_ADULT_DOG_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(REC_HOME_DISABLED_DOG, new MessageContainer(REC_HOME_DISABLED_DOG_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(CYNOLOGIST_ADVICES, new MessageContainer(CYNOLOGIST_ADVICES_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(LIST_OF_CYNOLOGISTS, new MessageContainer(LIST_OF_CYNOLOGISTS_MESSAGE, howToMenuCat));
+        messageContainerCatMap.put(REASONS_OF_DENY, new MessageContainer(REASONS_OF_DENY_MESSAGE, howToMenuCat));
+
     }
 }
